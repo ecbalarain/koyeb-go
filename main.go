@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"net/http"
 	"os"
+
+	"github.com/gofiber/fiber/v3"
 )
 
 func main() {
@@ -14,12 +14,14 @@ func main() {
 		port = "8080"
 	}
 
-	http.HandleFunc("/", HelloHandler)
+	app := fiber.New()
+
+	app.Get("/", HelloHandler)
 
 	log.Println("Listening on port", port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
+	log.Fatal(app.Listen(":" + port))
 }
 
-func HelloHandler(w http.ResponseWriter, _ *http.Request) {
-	fmt.Fprintf(w, "Hello from Koyeb\n")
+func HelloHandler(c fiber.Ctx) error {
+	return c.SendString("Hello from Koyeb\n")
 }
