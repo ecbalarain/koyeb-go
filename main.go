@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 
 	"github.com/gofiber/fiber/v3"
@@ -9,19 +8,15 @@ import (
 
 func main() {
 	port := os.Getenv("PORT")
-
 	if port == "" {
 		port = "8080"
 	}
 
 	app := fiber.New()
 
-	app.Get("/", HelloHandler)
+	app.Get("/", func(c fiber.Ctx) error {
+		return c.SendString("Hello, World!")
+	})
 
-	log.Println("Listening on port", port)
-	log.Fatal(app.Listen(":" + port))
-}
-
-func HelloHandler(c fiber.Ctx) error {
-	return c.SendString("Hello from Koyeb\n")
+	app.Listen(":" + port)
 }
