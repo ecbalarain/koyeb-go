@@ -357,8 +357,17 @@
 
     // --- API helpers ---
     async function apiRequest(url, options = {}, retries = 2) {
-      // Use full API URL for cross-domain requests
-      const apiUrl = url.startsWith('http') ? url : `https://api.bhomanshah.com${url}`;
+      // Determine if this is a static file or API request
+      let apiUrl;
+      if (url.startsWith('http')) {
+        apiUrl = url;
+      } else if (url.startsWith('/products.json') || url.endsWith('.json')) {
+        // Static files load from current domain
+        apiUrl = url;
+      } else {
+        // API requests go to api subdomain
+        apiUrl = `https://api.bhomanshah.com${url}`;
+      }
       
       for (let i = 0; i <= retries; i++) {
         try {
@@ -867,11 +876,20 @@
     async function renderCart() {
       const cartItems = [...state.cart.entries()];
 
+      // Check if cart elements exist (may not exist during initial load)
+      const cartCountEl = $('#cartCount');
+      const cartSubtotalEl = $('#cartSubtotal');
+      const cartItemsEl = $('#cartItems');
+      
+      if (!cartCountEl || !cartSubtotalEl || !cartItemsEl) {
+        return; // Elements not ready yet
+      }
+
       if (cartItems.length === 0) {
-        $('#cartCount').textContent = '0';
-        $('#cartCount').classList.add('hidden');
-        $('#cartSubtotal').textContent = '$0';
-        $('#cartItems').innerHTML = `
+        cartCountEl.textContent = '0';
+        cartCountEl.classList.add('hidden');
+        cartSubtotalEl.textContent = '$0';
+        cartItemsEl.innerHTML = `
           <div class="rounded-3xl border border-zinc-200 bg-white p-6 text-center text-sm text-zinc-600 shadow-sm">
             Your cart is empty.
           </div>
