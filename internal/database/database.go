@@ -16,10 +16,18 @@ func Connect(databaseURL string) (*sql.DB, error) {
 		MinVersion: tls.VersionTLS12,
 	})
 
-	// Parse the DSN from the URL format to Go MySQL driver format
-	dsn, err := parseDSN(databaseURL)
-	if err != nil {
-		return nil, fmt.Errorf("invalid DATABASE_URL: %w", err)
+	// Determine DSN format and convert if needed
+	var dsn string
+	if len(databaseURL) > 8 && databaseURL[:8] == "mysql://" {
+		// Parse URL format to Go MySQL driver format
+		parsedDSN, err := parseDSN(databaseURL)
+		if err != nil {
+			return nil, fmt.Errorf("invalid DATABASE_URL: %w", err)
+		}
+		dsn = parsedDSN
+	} else {
+		// Already in Go MySQL driver format
+		dsn = databaseURL
 	}
 
 	db, err := sql.Open("mysql", dsn)
