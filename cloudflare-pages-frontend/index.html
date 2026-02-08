@@ -1,0 +1,947 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Oxlook - Clean Essentials for Everyday Use</title>
+  
+  <!-- SEO & Performance -->
+  <meta name="description" content="Simplest, clean, minimal mobile-first online store UI." />
+  
+  <!-- Preconnect to improve performance -->
+  <link rel="preconnect" href="https://cdn.tailwindcss.com" />
+  <link rel="dns-prefetch" href="https://api.bhomanshah.com" />
+  
+  <!-- Tailwind (standalone) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-zinc-50 text-zinc-900">
+  <!-- Top bar -->
+  <header class="sticky top-0 z-30 border-b border-zinc-200/70 bg-white/75 backdrop-blur">
+    <div class="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:px-6">
+      <!-- Brand -->
+      <a href="#" class="flex items-center gap-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-900/20">
+        <span class="text-sm font-semibold tracking-tight sm:text-base">OXLOOK</span>
+      </a>
+
+      <div class="flex-1"></div>
+
+      <!-- Actions -->
+      <button id="openSearch" class="hidden items-center gap-2 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-600 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-900/20 sm:flex" type="button">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <span>Search</span>
+        <span class="ml-2 rounded-lg bg-zinc-100 px-2 py-0.5 text-xs text-zinc-500">/</span>
+      </button>
+
+      <button id="cartBtn" class="relative rounded-xl border border-zinc-200 bg-white p-2 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-900/20" type="button" aria-label="Open cart">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.6 12.3a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6l1.7-8.7H6.2"/></svg>
+        <span id="cartCount" class="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-zinc-900 text-xs font-semibold text-white">2</span>
+      </button>
+
+      <button id="menuBtn" class="rounded-xl border border-zinc-200 bg-white p-2 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-900/20 sm:hidden" type="button" aria-label="Open menu">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>
+      </button>
+    </div>
+
+    <!-- Mobile search row -->
+    <div class="mx-auto max-w-6xl px-4 pb-3 sm:hidden">
+      <label class="relative block">
+        <span class="sr-only">Search products</span>
+        <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-zinc-400">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        </span>
+        <input id="searchInputMobile" class="w-full rounded-2xl border border-zinc-200 bg-white py-2.5 pl-9 pr-3 text-sm shadow-sm placeholder:text-zinc-400 focus:border-zinc-300 focus:outline-none focus:ring-4 focus:ring-zinc-900/10" placeholder="Search products" />
+      </label>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
+    <!-- Hero -->
+    <section class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-8">
+      <div class="grid gap-6 sm:grid-cols-2 sm:items-center">
+        <div class="space-y-3">
+          <p class="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-xs text-zinc-600">
+            <span class="h-1.5 w-1.5 rounded-full bg-zinc-900"></span>
+            New arrivals
+          </p>
+          <h1 class="text-2xl font-semibold tracking-tight sm:text-4xl">Clean essentials for everyday use.</h1>
+          <p class="text-sm leading-relaxed text-zinc-600 sm:text-base">A minimal storefront UI with a mobile-first layout, soft shadows, and calm spacing.</p>
+          <div class="flex flex-wrap gap-2 pt-1">
+            <a href="#products" class="inline-flex items-center justify-center rounded-2xl bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-zinc-800 focus:outline-none focus:ring-4 focus:ring-zinc-900/20">Shop now</a>
+            <a href="#" class="inline-flex items-center justify-center rounded-2xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-800 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-4 focus:ring-zinc-900/10">View collections</a>
+          </div>
+          <dl class="grid grid-cols-3 gap-3 pt-4">
+            <div class="rounded-2xl border border-zinc-200 bg-zinc-50 p-3">
+              <dt class="text-xs text-zinc-500">Shipping</dt>
+              <dd class="mt-1 text-sm font-semibold">2–4 days</dd>
+            </div>
+            <div class="rounded-2xl border border-zinc-200 bg-zinc-50 p-3">
+              <dt class="text-xs text-zinc-500">Returns</dt>
+              <dd class="mt-1 text-sm font-semibold">30 days</dd>
+            </div>
+            <div class="rounded-2xl border border-zinc-200 bg-zinc-50 p-3">
+              <dt class="text-xs text-zinc-500">Support</dt>
+              <dd class="mt-1 text-sm font-semibold">24/7</dd>
+            </div>
+          </dl>
+        </div>
+
+        <!-- Simple “product” visual -->
+        <div class="relative overflow-hidden rounded-3xl border border-zinc-200 bg-gradient-to-b from-zinc-50 to-white p-5 sm:p-8">
+          <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-zinc-900/5"></div>
+          <div class="absolute -bottom-12 -left-12 h-56 w-56 rounded-full bg-zinc-900/5"></div>
+          <div class="relative grid gap-3">
+            <div class="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="h-12 w-12 rounded-2xl bg-zinc-100"></div>
+                <div class="flex-1">
+                  <div class="h-3 w-36 rounded bg-zinc-100"></div>
+                  <div class="mt-2 h-3 w-24 rounded bg-zinc-100"></div>
+                </div>
+                <div class="h-8 w-16 rounded-xl bg-zinc-900"></div>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+                <div class="h-20 rounded-2xl bg-zinc-100"></div>
+                <div class="mt-3 h-3 w-24 rounded bg-zinc-100"></div>
+                <div class="mt-2 h-3 w-16 rounded bg-zinc-100"></div>
+              </div>
+              <div class="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+                <div class="h-20 rounded-2xl bg-zinc-100"></div>
+                <div class="mt-3 h-3 w-24 rounded bg-zinc-100"></div>
+                <div class="mt-2 h-3 w-16 rounded bg-zinc-100"></div>
+              </div>
+            </div>
+            <p class="text-xs text-zinc-500">Tip: replace placeholders with product images.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filters -->
+    <section class="mt-8" aria-label="Filters">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div class="space-y-1">
+          <h2 id="products" class="text-base font-semibold tracking-tight">Products</h2>
+          <p class="text-sm text-zinc-600">Minimal grid, friendly spacing, responsive by default.</p>
+        </div>
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <label class="relative block sm:w-64">
+            <span class="sr-only">Search products</span>
+            <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-zinc-400">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            </span>
+            <input id="searchInput" class="w-full rounded-2xl border border-zinc-200 bg-white py-2.5 pl-9 pr-3 text-sm shadow-sm placeholder:text-zinc-400 focus:border-zinc-300 focus:outline-none focus:ring-4 focus:ring-zinc-900/10" placeholder="Search" />
+          </label>
+
+          <select id="sortSelect" class="w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2.5 text-sm shadow-sm focus:border-zinc-300 focus:outline-none focus:ring-4 focus:ring-zinc-900/10 sm:w-44">
+            <option value="featured">Featured</option>
+            <option value="price-asc">Price: Low → High</option>
+            <option value="price-desc">Price: High → Low</option>
+            <option value="name-asc">Name: A → Z</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mt-3 flex flex-wrap gap-2">
+        <button data-chip="All" class="chip is-active">All</button>
+        <button data-chip="Basics" class="chip">Basics</button>
+        <button data-chip="Home" class="chip">Home</button>
+        <button data-chip="Tech" class="chip">Tech</button>
+      </div>
+    </section>
+
+    <!-- Product grid -->
+    <section class="mt-5" aria-label="Product list">
+      <div id="grid" class="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
+        <!-- Cards injected by JS -->
+      </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="mt-10 rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-8">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h3 class="text-base font-semibold tracking-tight">Get updates</h3>
+          <p class="mt-1 text-sm text-zinc-600">New drops and offers. No spam.</p>
+        </div>
+        <form class="flex w-full gap-2 sm:w-auto" onsubmit="event.preventDefault(); toast('Subscribed');">
+          <input class="w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2.5 text-sm shadow-sm placeholder:text-zinc-400 focus:border-zinc-300 focus:outline-none focus:ring-4 focus:ring-zinc-900/10 sm:w-72" placeholder="Email address" type="email" required />
+          <button class="shrink-0 rounded-2xl bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-zinc-800 focus:outline-none focus:ring-4 focus:ring-zinc-900/20" type="submit">Subscribe</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="mt-10 pb-10 text-sm text-zinc-500">
+      <div class="flex flex-col gap-3 border-t border-zinc-200 pt-6 sm:flex-row sm:items-center sm:justify-between">
+        <p>© <span id="year"></span> Minimal Store</p>
+        <div class="flex flex-wrap gap-x-5 gap-y-2">
+          <a class="hover:text-zinc-700" href="#">Shipping</a>
+          <a class="hover:text-zinc-700" href="#">Returns</a>
+          <a class="hover:text-zinc-700" href="#">Privacy</a>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- Mobile menu drawer -->
+  <div id="menuOverlay" class="fixed inset-0 z-40 hidden">
+    <div class="absolute inset-0 bg-zinc-900/30" data-close></div>
+    <div class="absolute right-0 top-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl">
+      <div class="flex items-center justify-between border-b border-zinc-200 px-4 py-3">
+        <p class="text-sm font-semibold">Menu</p>
+        <button class="rounded-xl p-2 hover:bg-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-900/20" data-close aria-label="Close">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <nav class="px-4 py-4 text-sm">
+        <a class="block rounded-2xl px-3 py-2 hover:bg-zinc-50" href="#products">Shop</a>
+        <a class="block rounded-2xl px-3 py-2 hover:bg-zinc-50" href="#">Collections</a>
+        <a class="block rounded-2xl px-3 py-2 hover:bg-zinc-50" href="#">About</a>
+        <a class="block rounded-2xl px-3 py-2 hover:bg-zinc-50" href="#">Support</a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Cart drawer -->
+  <div id="cartOverlay" class="fixed inset-0 z-40 hidden">
+    <div class="absolute inset-0 bg-zinc-900/30" data-close></div>
+    <div class="absolute right-0 top-0 flex h-full w-[420px] max-w-[92vw] flex-col bg-white shadow-2xl">
+      <div class="flex items-center justify-between border-b border-zinc-200 px-4 py-3">
+        <p class="text-sm font-semibold">Your cart</p>
+        <button class="rounded-xl p-2 hover:bg-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-900/20" data-close aria-label="Close">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div id="cartItems" class="flex-1 space-y-3 overflow-auto px-4 py-4">
+        <!-- Items injected by JS -->
+      </div>
+
+      <div class="border-t border-zinc-200 px-4 py-4">
+        <div class="flex items-center justify-between text-sm">
+          <span class="text-zinc-600">Subtotal</span>
+          <span id="cartSubtotal" class="font-semibold">$0</span>
+        </div>
+        <button class="mt-3 w-full rounded-2xl bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-zinc-800 focus:outline-none focus:ring-4 focus:ring-zinc-900/20" type="button" onclick="showCheckout()">Checkout</button>
+        <button class="mt-2 w-full rounded-2xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-800 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-4 focus:ring-zinc-900/10" type="button" onclick="clearCart()">Clear cart</button>
+        <p class="mt-3 text-xs text-zinc-500">Demo UI only — connect to your backend later.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checkout overlay -->
+  <div id="checkoutOverlay" class="fixed inset-0 z-40 hidden">
+    <div class="absolute inset-0 bg-zinc-900/30" data-close></div>
+    <div class="absolute right-0 top-0 flex h-full w-[420px] max-w-[92vw] flex-col bg-white shadow-2xl">
+      <div class="flex items-center justify-between border-b border-zinc-200 px-4 py-3">
+        <p class="text-sm font-semibold">Checkout</p>
+        <button class="rounded-xl p-2 hover:bg-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-900/20" data-close aria-label="Close">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <form id="checkoutForm" class="flex-1 space-y-4 overflow-auto px-4 py-4">
+        <div>
+          <label class="block text-sm font-medium text-zinc-900">Name</label>
+          <input type="text" name="name" required class="mt-1 w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2.5 text-sm shadow-sm placeholder:text-zinc-400 focus:border-zinc-300 focus:outline-none focus:ring-4 focus:ring-zinc-900/10" placeholder="Your full name" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-zinc-900">Phone</label>
+          <input type="tel" name="phone" required class="mt-1 w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2.5 text-sm shadow-sm placeholder:text-zinc-400 focus:border-zinc-300 focus:outline-none focus:ring-4 focus:ring-zinc-900/10" placeholder="+1 (555) 123-4567" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-zinc-900">Address</label>
+          <input type="text" name="address" required class="mt-1 w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2.5 text-sm shadow-sm placeholder:text-zinc-400 focus:border-zinc-300 focus:outline-none focus:ring-4 focus:ring-zinc-900/10" placeholder="Street address" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-zinc-900">City</label>
+          <input type="text" name="city" required class="mt-1 w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2.5 text-sm shadow-sm placeholder:text-zinc-400 focus:border-zinc-300 focus:outline-none focus:ring-4 focus:ring-zinc-900/10" placeholder="City" />
+        </div>
+
+        <div class="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-zinc-600">Subtotal</span>
+            <span id="checkoutSubtotal">$0</span>
+          </div>
+          <div class="mt-2 flex items-center justify-between text-sm">
+            <span class="text-zinc-600">Shipping</span>
+            <span>Free</span>
+          </div>
+          <div class="mt-2 border-t border-zinc-200 pt-2 flex items-center justify-between font-semibold">
+            <span>Total</span>
+            <span id="checkoutTotal">$0</span>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full rounded-2xl bg-zinc-900 px-4 py-3 text-sm font-medium text-white shadow-sm hover:bg-zinc-800 focus:outline-none focus:ring-4 focus:ring-zinc-900/20">
+          Place Order
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <style>
+    /* Tailwind-friendly utility class for chips */
+    .chip { @apply rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-700 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-4 focus:ring-zinc-900/10; }
+    .chip.is-active { @apply border-zinc-900/20 bg-zinc-900 text-white; }
+  </style>
+
+  <script>
+    // --- State ---
+    let products = [];
+    const state = {
+      chip: 'All',
+      q: '',
+      sort: 'featured',
+      cart: new Map(), // variant_id -> qty
+      currentProduct: null,
+      loading: false
+    };
+
+    // --- DOM helpers ---
+    const $ = (sel) => document.querySelector(sel);
+    const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+    // --- API helpers ---
+    async function apiRequest(url, options = {}) {
+      try {
+        const response = await fetch(url, {
+          ...options,
+          headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+          }
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return await response.json();
+      } catch (error) {
+        console.error('API request failed:', error);
+        throw error;
+      }
+    }
+
+    // --- Toast ---
+    let toastTimer;
+    function toast(message) {
+      const el = $('#toast');
+      el.querySelector('div').textContent = message;
+      el.classList.remove('hidden');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.add('hidden'), 1600);
+    }
+
+    // --- Loading state ---
+    function setLoading(loading) {
+      state.loading = loading;
+      const btn = $('#cartBtn');
+      if (loading) {
+        btn.disabled = true;
+        btn.innerHTML = '<div class="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>';
+      } else {
+        btn.disabled = false;
+        btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.6 12.3a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6l1.7-8.7H6.2"/></svg>';
+      }
+    }
+
+    // --- Load products ---
+    async function loadProducts() {
+      try {
+        setLoading(true);
+        const data = await apiRequest('/products.json');
+        products = data;
+        renderGrid();
+      } catch (error) {
+        console.error('Failed to load products:', error);
+        toast('Failed to load products');
+        // Fallback to demo data
+        products = [
+          { id: 2, name: 'Stone Mug', slug: 'stone-mug', description: 'A sleek stoneware mug', category: 'Home', images: ['/images/stone-mug.jpg'] },
+          { id: 3, name: 'Minimal Tee', slug: 'minimal-tee', description: 'A comfortable cotton t-shirt', category: 'Basics', images: ['/images/minimal-tee.jpg'] },
+          { id: 4, name: 'Desk Lamp', slug: 'desk-lamp', description: 'A modern LED desk lamp', category: 'Home', images: ['/images/desk-lamp.jpg'] },
+          { id: 5, name: 'Wireless Charger', slug: 'wireless-charger', description: 'A fast wireless charger', category: 'Tech', images: ['/images/wireless-charger.jpg'] },
+          { id: 6, name: 'Key Organizer', slug: 'key-organizer', description: 'A leather key organizer', category: 'Tech', images: ['/images/key-organizer.jpg'] },
+          { id: 7, name: 'Scented Candle', slug: 'scented-candle', description: 'A soy wax candle', category: 'Home', images: ['/images/scented-candle.jpg'] },
+          { id: 8, name: 'Notebook Set', slug: 'notebook-set', description: 'A set of premium notebooks', category: 'Basics', images: ['/images/notebook-set.jpg'] },
+        ];
+        renderGrid();
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    // --- Render product cards ---
+    function productCard(p) {
+      return `
+        <article class="group rounded-3xl border border-zinc-200 bg-white p-3 shadow-sm transition hover:shadow-md cursor-pointer" onclick="showProductDetail(${p.id})">
+          <div class="aspect-[4/3] overflow-hidden rounded-2xl bg-zinc-100">
+            <div class="h-full w-full bg-gradient-to-b from-zinc-100 to-zinc-50"></div>
+          </div>
+          <div class="mt-3 flex items-start justify-between gap-2">
+            <div>
+              <h3 class="text-sm font-medium tracking-tight">${p.name}</h3>
+              <p class="mt-1 text-xs text-zinc-500">${p.category}</p>
+            </div>
+            <p class="text-sm font-semibold">From $${getMinPrice(p.id) || 'TBD'}</p>
+          </div>
+          <div class="mt-3">
+            <button class="w-full rounded-2xl bg-zinc-900 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-zinc-800 focus:outline-none focus:ring-4 focus:ring-zinc-900/20" type="button" onclick="event.stopPropagation(); showProductDetail(${p.id})">View Details</button>
+          </div>
+        </article>
+      `;
+    }
+
+    // --- Get minimum price for a product ---
+    function getMinPrice(productId) {
+      // This will be updated when we load variants
+      return null; // For now
+    }
+
+    function filteredProducts() {
+      let list = [...products];
+
+      if (state.chip !== 'All') list = list.filter(p => p.category === state.chip);
+      if (state.q.trim()) {
+        const q = state.q.trim().toLowerCase();
+        list = list.filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q) || p.description.toLowerCase().includes(q));
+      }
+
+      switch (state.sort) {
+        case 'price-asc': list.sort((a,b) => (getMinPrice(a.id) || 0) - (getMinPrice(b.id) || 0)); break;
+        case 'price-desc': list.sort((a,b) => (getMinPrice(b.id) || 0) - (getMinPrice(a.id) || 0)); break;
+        case 'name-asc': list.sort((a,b) => a.name.localeCompare(b.name)); break;
+        default: /* featured */ break;
+      }
+
+      return list;
+    }
+
+    function renderGrid() {
+      const list = filteredProducts();
+      $('#grid').innerHTML = list.map(productCard).join('') || `
+        <div class="col-span-full rounded-3xl border border-zinc-200 bg-white p-6 text-center text-sm text-zinc-600 shadow-sm">
+          No products found.
+        </div>
+      `;
+    }
+
+    // --- Product Detail ---
+    async function showProductDetail(productId) {
+      const product = products.find(p => p.id === productId);
+      if (!product) return;
+
+      try {
+        setLoading(true);
+        const variants = await apiRequest(`/api/products/${product.slug}/variants`);
+        state.currentProduct = { ...product, variants };
+        renderProductDetail();
+        openOverlay($('#productOverlay'));
+      } catch (error) {
+        console.error('Failed to load product variants:', error);
+        toast('Failed to load product details');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function renderProductDetail() {
+      const product = state.currentProduct;
+      if (!product) return;
+
+      const selectedVariant = getSelectedVariant();
+      const price = selectedVariant ? `$${(selectedVariant.price / 100).toFixed(2)}` : 'Select options';
+      const stockStatus = getStockStatus(selectedVariant);
+      const canAddToCart = selectedVariant && selectedVariant.stock > 0 && selectedVariant.active;
+
+      $('#productDetail').innerHTML = `
+        <div class="grid gap-6 md:grid-cols-2">
+          <!-- Image -->
+          <div class="aspect-square overflow-hidden rounded-3xl bg-zinc-100">
+            <div class="h-full w-full bg-gradient-to-b from-zinc-100 to-zinc-50"></div>
+          </div>
+
+          <!-- Details -->
+          <div class="space-y-4">
+            <div>
+              <h2 class="text-2xl font-semibold tracking-tight">${product.name}</h2>
+              <p class="mt-1 text-sm text-zinc-600">${product.category}</p>
+              <p class="mt-2 text-sm text-zinc-600">${product.description}</p>
+            </div>
+
+            <div class="space-y-3">
+              <!-- Size selector -->
+              ${renderSizeSelector()}
+
+              <!-- Color selector -->
+              ${renderColorSelector()}
+
+              <!-- Price and stock -->
+              <div class="flex items-center justify-between">
+                <p class="text-2xl font-semibold">${price}</p>
+                <p class="text-sm ${stockStatus.class}">${stockStatus.text}</p>
+              </div>
+
+              <!-- Add to cart -->
+              <button
+                id="addToCartBtn"
+                class="w-full rounded-2xl bg-zinc-900 px-4 py-3 text-sm font-medium text-white shadow-sm hover:bg-zinc-800 focus:outline-none focus:ring-4 focus:ring-zinc-900/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                type="button"
+                ${!canAddToCart ? 'disabled' : ''}
+                onclick="addSelectedVariantToCart()"
+              >
+                ${canAddToCart ? 'Add to Cart' : 'Out of Stock'}
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      updateVariantSelection();
+    }
+
+    function renderSizeSelector() {
+      const sizes = [...new Set(state.currentProduct.variants.map(v => v.size))].sort();
+      if (sizes.length <= 1) return '';
+
+      return `
+        <div>
+          <p class="text-sm font-medium text-zinc-900">Size</p>
+          <div class="mt-2 flex flex-wrap gap-2">
+            ${sizes.map(size => `
+              <button
+                class="size-option rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm font-medium shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-900/20"
+                data-size="${size}"
+              >
+                ${size}
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderColorSelector() {
+      const colors = [...new Set(state.currentProduct.variants.map(v => v.color))].sort();
+      if (colors.length <= 1) return '';
+
+      return `
+        <div>
+          <p class="text-sm font-medium text-zinc-900">Color</p>
+          <div class="mt-2 flex flex-wrap gap-2">
+            ${colors.map(color => `
+              <button
+                class="color-option rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm font-medium shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-900/20"
+                data-color="${color}"
+              >
+                ${color}
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function getSelectedVariant() {
+      const selectedSize = $('#productDetail')?.querySelector('.size-option.selected')?.dataset.size;
+      const selectedColor = $('#productDetail')?.querySelector('.color-option.selected')?.dataset.color;
+
+      return state.currentProduct?.variants.find(v =>
+        (!selectedSize || v.size === selectedSize) &&
+        (!selectedColor || v.color === selectedColor)
+      );
+    }
+
+    function getStockStatus(variant) {
+      if (!variant) return { text: 'Select options', class: 'text-zinc-500' };
+      if (!variant.active) return { text: 'Unavailable', class: 'text-red-600' };
+      if (variant.stock === 0) return { text: 'Out of stock', class: 'text-red-600' };
+      if (variant.stock <= 5) return { text: 'Low stock', class: 'text-orange-600' };
+      return { text: 'In stock', class: 'text-green-600' };
+    }
+
+    function updateVariantSelection() {
+      const selectedSize = $('#productDetail')?.querySelector('.size-option.selected')?.dataset.size;
+      const selectedColor = $('#productDetail')?.querySelector('.color-option.selected')?.dataset.color;
+
+      // Update size buttons
+      $$('.size-option').forEach(btn => {
+        const size = btn.dataset.size;
+        const hasVariants = state.currentProduct.variants.some(v =>
+          v.size === size && (!selectedColor || v.color === selectedColor)
+        );
+        btn.classList.toggle('selected', size === selectedSize);
+        btn.classList.toggle('opacity-50', !hasVariants);
+        btn.disabled = !hasVariants;
+      });
+
+      // Update color buttons
+      $$('.color-option').forEach(btn => {
+        const color = btn.dataset.color;
+        const hasVariants = state.currentProduct.variants.some(v =>
+          v.color === color && (!selectedSize || v.size === selectedSize)
+        );
+        btn.classList.toggle('selected', color === selectedColor);
+        btn.classList.toggle('opacity-50', !hasVariants);
+        btn.disabled = !hasVariants;
+      });
+
+      // Update price and stock
+      const selectedVariant = getSelectedVariant();
+      const priceEl = $('#productDetail')?.querySelector('.text-2xl');
+      const stockEl = $('#productDetail')?.querySelector('.text-sm.text-zinc-500, .text-sm.text-red-600, .text-sm.text-orange-600, .text-sm.text-green-600');
+      const addBtn = $('#addToCartBtn');
+
+      if (priceEl && selectedVariant) {
+        priceEl.textContent = `$${(selectedVariant.price / 100).toFixed(2)}`;
+      }
+
+      if (stockEl && selectedVariant) {
+        const stockStatus = getStockStatus(selectedVariant);
+        stockEl.textContent = stockStatus.text;
+        stockEl.className = `text-sm ${stockStatus.class}`;
+      }
+
+      if (addBtn) {
+        const canAdd = selectedVariant && selectedVariant.stock > 0 && selectedVariant.active;
+        addBtn.disabled = !canAdd;
+        addBtn.textContent = canAdd ? 'Add to Cart' : 'Out of Stock';
+      }
+    }
+
+    // --- Checkout ---
+    async function showCheckout() {
+      if (state.cart.size === 0) {
+        toast('Your cart is empty');
+        return;
+      }
+
+      closeOverlay($('#cartOverlay'));
+
+      // Calculate totals
+      const cartItems = [...state.cart.entries()];
+      let subtotal = 0;
+
+      // Get variant details for pricing
+      for (const [variantId, qty] of cartItems) {
+        // Find the variant - this is a simplified approach
+        // In a real app, you'd cache this data
+        try {
+          // We need to find which product this variant belongs to
+          // For now, we'll make a rough estimate
+          const productId = Math.floor(variantId / 10);
+          const product = products.find(p => p.id === productId);
+          if (product) {
+            const variants = await apiRequest(`/api/products/${product.slug}/variants`);
+            const variant = variants.find(v => v.id === variantId);
+            if (variant) {
+              subtotal += (variant.price / 100) * qty;
+            }
+          }
+        } catch (error) {
+          console.error('Error calculating price:', error);
+        }
+      }
+
+      $('#checkoutSubtotal').textContent = `$${subtotal.toFixed(2)}`;
+      $('#checkoutTotal').textContent = `$${subtotal.toFixed(2)}`;
+
+      openOverlay($('#checkoutOverlay'));
+    }
+
+    async function submitOrder(formData) {
+      try {
+        setLoading(true);
+
+        // Build order items from cart
+        const items = [];
+        for (const [variantId, qty] of state.cart.entries()) {
+          // Find product and variant details
+          const productId = Math.floor(variantId / 10);
+          const product = products.find(p => p.id === productId);
+          if (product) {
+            try {
+              const variants = await apiRequest(`/api/products/${product.slug}/variants`);
+              const variant = variants.find(v => v.id === variantId);
+              if (variant) {
+                items.push({
+                  variant_id: variantId,
+                  quantity: qty
+                });
+              }
+            } catch (error) {
+              console.error('Error getting variant details:', error);
+            }
+          }
+        }
+
+        if (items.length === 0) {
+          throw new Error('No valid items in cart');
+        }
+
+        const orderData = {
+          customer_name: formData.get('name'),
+          customer_phone: formData.get('phone'),
+          customer_address: formData.get('address'),
+          customer_city: formData.get('city'),
+          items: items
+        };
+
+        const response = await apiRequest('/api/orders', {
+          method: 'POST',
+          body: JSON.stringify(orderData)
+        });
+
+        // Success
+        state.cart.clear();
+        saveCart();
+        closeOverlay($('#checkoutOverlay'));
+        toast(`Order placed! ID: ${response.order_id}`);
+
+        // Reset form
+        $('#checkoutForm').reset();
+
+      } catch (error) {
+        console.error('Order submission failed:', error);
+        toast('Failed to place order. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function addSelectedVariantToCart() {
+      const variant = getSelectedVariant();
+      if (!variant) return;
+
+      addToCart(variant.id);
+      closeOverlay($('#productOverlay'));
+    }
+
+    // --- Cart ---
+    function addToCart(variantId) {
+      state.cart.set(variantId, (state.cart.get(variantId) || 0) + 1);
+      saveCart();
+      renderCart();
+      toast('Added to cart');
+    }
+
+    function decItem(variantId) {
+      const qty = state.cart.get(variantId) || 0;
+      if (qty <= 1) {
+        state.cart.delete(variantId);
+      } else {
+        state.cart.set(variantId, qty - 1);
+      }
+      saveCart();
+      renderCart();
+    }
+
+    function incItem(variantId) {
+      state.cart.set(variantId, (state.cart.get(variantId) || 0) + 1);
+      saveCart();
+      renderCart();
+    }
+
+    function clearCart() {
+      state.cart.clear();
+      saveCart();
+      renderCart();
+      toast('Cart cleared');
+    }
+
+    function saveCart() {
+      try {
+        const cartData = Array.from(state.cart.entries());
+        localStorage.setItem('cart', JSON.stringify(cartData));
+      } catch (error) {
+        console.error('Failed to save cart:', error);
+      }
+    }
+
+    function loadCart() {
+      try {
+        const cartData = localStorage.getItem('cart');
+        if (cartData) {
+          state.cart = new Map(JSON.parse(cartData));
+        }
+      } catch (error) {
+        console.error('Failed to load cart:', error);
+        state.cart = new Map();
+      }
+    }
+
+    async function renderCart() {
+      const cartItems = [...state.cart.entries()];
+
+      if (cartItems.length === 0) {
+        $('#cartCount').textContent = '0';
+        $('#cartCount').classList.add('hidden');
+        $('#cartSubtotal').textContent = '$0';
+        $('#cartItems').innerHTML = `
+          <div class="rounded-3xl border border-zinc-200 bg-white p-6 text-center text-sm text-zinc-600 shadow-sm">
+            Your cart is empty.
+          </div>
+        `;
+        return;
+      }
+
+      try {
+        setLoading(true);
+        // Get all unique product IDs from cart variants
+        const variantIds = cartItems.map(([variantId]) => variantId);
+        const productIds = [...new Set(variantIds.map(id => {
+          // We need to find the product for each variant
+          // For now, we'll use a simple approach - this should be improved
+          return Math.floor(id / 10); // Rough approximation
+        }))];
+
+        // Load variants for all products in cart
+        const variantPromises = productIds.map(async (productId) => {
+          const product = products.find(p => p.id === productId);
+          if (!product) return [];
+          try {
+            return await apiRequest(`/api/products/${product.slug}/variants`);
+          } catch {
+            return [];
+          }
+        });
+
+        const allVariants = (await Promise.all(variantPromises)).flat();
+
+        const items = cartItems.map(([variantId, qty]) => {
+          const variant = allVariants.find(v => v.id === variantId);
+          const product = products.find(p => p.id === variant?.product_id);
+          return {
+            variant,
+            product,
+            qty,
+            variantLabel: variant ? `${variant.size} / ${variant.color}` : 'Unknown variant',
+            price: variant ? variant.price / 100 : 0
+          };
+        }).filter(item => item.variant && item.product);
+
+        const count = items.reduce((sum, x) => sum + x.qty, 0);
+        $('#cartCount').textContent = String(count);
+        $('#cartCount').classList.toggle('hidden', count === 0);
+
+        const subtotal = items.reduce((sum, x) => sum + x.price * x.qty, 0);
+        $('#cartSubtotal').textContent = `$${subtotal.toFixed(2)}`;
+
+        $('#cartItems').innerHTML = items.map(x => `
+          <div class="rounded-3xl border border-zinc-200 bg-white p-3 shadow-sm">
+            <div class="flex gap-3">
+              <div class="h-16 w-16 shrink-0 rounded-2xl bg-zinc-100"></div>
+              <div class="min-w-0 flex-1">
+                <p class="truncate text-sm font-medium">${x.product.name}</p>
+                <p class="mt-1 text-xs text-zinc-500">$${x.price.toFixed(2)} • ${x.variantLabel}</p>
+                <div class="mt-3 flex items-center justify-between">
+                  <div class="inline-flex items-center gap-2 rounded-2xl border border-zinc-200 bg-zinc-50 p-1">
+                    <button class="rounded-xl px-2 py-1 text-sm hover:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/10" onclick="decItem(${x.variant.id})" aria-label="Decrease">−</button>
+                    <span class="w-6 text-center text-sm">${x.qty}</span>
+                    <button class="rounded-xl px-2 py-1 text-sm hover:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/10" onclick="incItem(${x.variant.id})" aria-label="Increase">+</button>
+                  </div>
+                  <p class="text-sm font-semibold">$${(x.price * x.qty).toFixed(2)}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+      } catch (error) {
+        console.error('Failed to render cart:', error);
+        toast('Failed to load cart items');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    // --- Drawers ---
+    function openOverlay(el) {
+      el.classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+    }
+
+    function closeOverlay(el) {
+      el.classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    function wireOverlay(overlay) {
+      overlay.addEventListener('click', (e) => {
+        if (e.target.matches('[data-close]')) closeOverlay(overlay);
+      });
+      overlay.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeOverlay(overlay);
+      });
+    }
+
+    // --- Init ---
+    function init() {
+      $('#year').textContent = String(new Date().getFullYear());
+
+      // Load cart from localStorage
+      loadCart();
+
+      // Chips
+      $$('.chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.chip = btn.dataset.chip;
+          $$('.chip').forEach(b => b.classList.toggle('is-active', b === btn));
+          renderGrid();
+        });
+      });
+
+      // Search
+      const search = (val) => { state.q = val; renderGrid(); };
+      $('#searchInput').addEventListener('input', (e) => search(e.target.value));
+      $('#searchInputMobile').addEventListener('input', (e) => search(e.target.value));
+
+      // Sort
+      $('#sortSelect').addEventListener('change', (e) => { state.sort = e.target.value; renderGrid(); });
+
+      // Overlays
+      const menuOverlay = $('#menuOverlay');
+      const cartOverlay = $('#cartOverlay');
+      const productOverlay = $('#productOverlay');
+      const checkoutOverlay = $('#checkoutOverlay');
+      wireOverlay(menuOverlay);
+      wireOverlay(cartOverlay);
+      wireOverlay(productOverlay);
+      wireOverlay(checkoutOverlay);
+
+      $('#menuBtn').addEventListener('click', () => openOverlay(menuOverlay));
+      $('#cartBtn').addEventListener('click', () => openOverlay(cartOverlay));
+
+      // Checkout form
+      $('#checkoutForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        await submitOrder(formData);
+      });
+
+      // Keyboard shortcut for search (desktop)
+      document.addEventListener('keydown', (e) => {
+        if (e.key === '/' && !e.metaKey && !e.ctrlKey && !e.altKey) {
+          const active = document.activeElement;
+          const isTyping = active && ['INPUT','TEXTAREA'].includes(active.tagName);
+          if (!isTyping) {
+            e.preventDefault();
+            $('#searchInput').focus();
+          }
+        }
+      });
+
+      // Load products and render
+      loadProducts();
+      renderCart();
+    }
+
+    init();
+  </script>
+</body>
+</html>

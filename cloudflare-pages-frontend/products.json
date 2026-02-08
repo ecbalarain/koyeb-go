@@ -1,0 +1,58 @@
+[
+  {
+    "id": 2,
+    "name": "Stone Mug",
+    "slug": "stone-mug",
+    "description": "A sleek stoneware mug that keeps drinks hot or cold.",
+    "category": "Home",
+    "images": ["/images/stone-mug.jpg"]
+  },
+  {
+    "id": 3,
+    "name": "Minimal Tee",
+    "slug": "minimal-tee",
+    "description": "A comfortable cotton t-shirt with a minimalist design.",
+    "category": "Basics",
+    "images": ["/images/minimal-tee.jpg"]
+  },
+  {
+    "id": 4,
+    "name": "Desk Lamp",
+    "slug": "desk-lamp",
+    "description": "A modern LED desk lamp with adjustable brightness.",
+    "category": "Home",
+    "images": ["/images/desk-lamp.jpg"]
+  },
+  {
+    "id": 5,
+    "name": "Wireless Charger",
+    "slug": "wireless-charger",
+    "description": "A fast wireless charger compatible with all devices.",
+    "category": "Tech",
+    "images": ["/images/wireless-charger.jpg"]
+  },
+  {
+    "id": 6,
+    "name": "Key Organizer",
+    "slug": "key-organizer",
+    "description": "A leather key organizer with multiple compartments.",
+    "category": "Tech",
+    "images": ["/images/key-organizer.jpg"]
+  },
+  {
+    "id": 7,
+    "name": "Scented Candle",
+    "slug": "scented-candle",
+    "description": "A soy wax candle with calming lavender scent.",
+    "category": "Home",
+    "images": ["/images/scented-candle.jpg"]
+  },
+  {
+    "id": 8,
+    "name": "Notebook Set",
+    "slug": "notebook-set",
+    "description": "A set of premium notebooks in various sizes.",
+    "category": "Basics",
+    "images": ["/images/notebook-set.jpg"]
+  }
+]

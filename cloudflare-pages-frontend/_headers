@@ -1,0 +1,56 @@
+# Cloudflare Pages Configuration
+# This file configures caching, headers, and other Cloudflare-specific settings
+
+# Cache static assets aggressively
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.css
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.woff
+  Cache-Control: public, max-age=31536000, immutable
+
+# Cache images for 1 year (update when images change)
+/*.jpg
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.jpeg
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.png
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.webp
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.svg
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.gif
+  Cache-Control: public, max-age=31536000, immutable
+
+# Cache products.json for 10 minutes (can be refreshed frequently)
+/products.json
+  Cache-Control: public, max-age=600, s-maxage=600
+
+# HTML pages - cache for 5 minutes
+/*.html
+  Cache-Control: public, max-age=300, s-maxage=300
+
+# Root index - cache for 5 minutes
+/
+  Cache-Control: public, max-age=300, s-maxage=300
+
+# Security headers for all pages
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()

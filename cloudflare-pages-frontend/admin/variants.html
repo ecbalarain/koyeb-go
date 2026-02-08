@@ -1,0 +1,287 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight">Product Variants</h1>
+      <p class="mt-1 text-sm text-zinc-600">Manage sizes, colors, prices, and stock</p>
+    </div>
+    <div class="flex gap-2">
+      <button id="refreshBtn" class="btn-secondary">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+        Refresh
+      </button>
+      <button id="addVariantBtn" class="btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+        Add Variant
+      </button>
+    </div>
+  </div>
+
+  <!-- Breadcrumb -->
+  <nav class="flex items-center space-x-2 text-sm text-zinc-600">
+    <a href="/admin" class="hover:text-zinc-900">Products</a>
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+    <span id="productName" class="text-zinc-900">Loading...</span>
+  </nav>
+
+  <!-- Variants table -->
+  <div class="rounded-3xl border border-zinc-200 bg-white shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Size</th>
+            <th>Color</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="variantsTableBody">
+          <!-- Variants will be loaded here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Empty state -->
+  <div id="emptyState" class="hidden rounded-3xl border border-zinc-200 bg-white p-12 text-center">
+    <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+    <h3 class="mt-4 text-lg font-medium text-zinc-900">No variants found</h3>
+    <p class="mt-2 text-sm text-zinc-600">Add your first variant to get started.</p>
+  </div>
+</div>
+
+<!-- Add/Edit Variant Modal -->
+<div id="variantModal" class="fixed inset-0 z-50 hidden">
+  <div class="absolute inset-0 bg-zinc-900/30" data-close></div>
+  <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-3xl shadow-2xl">
+    <div class="flex items-center justify-between border-b border-zinc-200 px-6 py-4">
+      <h3 id="modalTitle" class="text-lg font-semibold">Add Variant</h3>
+      <button class="rounded-xl p-2 hover:bg-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-900/20" data-close aria-label="Close">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <form id="variantForm" class="px-6 py-4 space-y-4">
+      <div>
+        <label for="variantSize" class="form-label">Size</label>
+        <input type="text" id="variantSize" name="size" class="form-input" required />
+      </div>
+
+      <div>
+        <label for="variantColor" class="form-label">Color</label>
+        <input type="text" id="variantColor" name="color" class="form-input" required />
+      </div>
+
+      <div>
+        <label for="variantPrice" class="form-label">Price (in cents)</label>
+        <input type="number" id="variantPrice" name="price" class="form-input" min="1" required />
+      </div>
+
+      <div>
+        <label for="variantStock" class="form-label">Stock</label>
+        <input type="number" id="variantStock" name="stock" class="form-input" min="0" required />
+      </div>
+
+      <div class="flex items-center">
+        <input type="checkbox" id="variantActive" name="active" class="rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900" checked />
+        <label for="variantActive" class="ml-2 text-sm text-zinc-700">Active</label>
+      </div>
+
+      <div class="flex gap-3 pt-4">
+        <button type="button" class="flex-1 btn-secondary" data-close>Cancel</button>
+        <button type="submit" class="flex-1 btn-primary">Save Variant</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  let productId = null;
+  let variants = [];
+  let editingVariant = null;
+
+  // --- Get product ID from URL ---
+  function getProductIdFromUrl() {
+    const path = window.location.pathname;
+    const match = path.match(/\/admin\/products\/(\d+)\/variants/);
+    return match ? parseInt(match[1]) : null;
+  }
+
+  // --- Variant row template ---
+  function variantRow(variant) {
+    const statusClass = variant.active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+    const statusText = variant.active ? 'Active' : 'Inactive';
+
+    return `
+      <tr>
+        <td class="font-medium">${variant.size}</td>
+        <td>${variant.color}</td>
+        <td>$${(variant.price / 100).toFixed(2)}</td>
+        <td>${variant.stock}</td>
+        <td>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}">
+            ${statusText}
+          </span>
+        </td>
+        <td>
+          <div class="flex items-center gap-2">
+            <button onclick="editVariant(${variant.id})" class="text-zinc-600 hover:text-zinc-900">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="m18.5 2.5 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+            <button onclick="deleteVariant(${variant.id})" class="text-zinc-600 hover:text-red-600">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }
+
+  // --- Load product and variants ---
+  async function loadData() {
+    productId = getProductIdFromUrl();
+    if (!productId) {
+      toast('Invalid product ID', 'error');
+      return;
+    }
+
+    try {
+      // Load product info
+      const products = await apiRequest('/admin/api/products');
+      const product = products.find(p => p.id === productId);
+      if (product) {
+        $('#productName').textContent = product.name;
+      }
+
+      // Load variants
+      const data = await apiRequest(`/admin/api/products/${productId}/variants`);
+      variants = data;
+      renderVariants();
+    } catch (error) {
+      console.error('Failed to load data:', error);
+    }
+  }
+
+  // --- Render variants ---
+  function renderVariants() {
+    const tbody = $('#variantsTableBody');
+    const empty = $('#emptyState');
+
+    if (variants.length === 0) {
+      tbody.innerHTML = '';
+      empty.classList.remove('hidden');
+    } else {
+      empty.classList.add('hidden');
+      tbody.innerHTML = variants.map(variantRow).join('');
+    }
+  }
+
+  // --- Modal functions ---
+  function showModal(title, variant = null) {
+    editingVariant = variant;
+    $('#modalTitle').textContent = title;
+
+    if (variant) {
+      $('#variantSize').value = variant.size;
+      $('#variantColor').value = variant.color;
+      $('#variantPrice').value = variant.price;
+      $('#variantStock').value = variant.stock;
+      $('#variantActive').checked = variant.active;
+    } else {
+      $('#variantForm').reset();
+      $('#variantActive').checked = true;
+    }
+
+    $('#variantModal').classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+  }
+
+  function hideModal() {
+    $('#variantModal').classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
+    editingVariant = null;
+  }
+
+  // --- Form submission ---
+  async function handleFormSubmit(e) {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+    const variantData = {
+      size: formData.get('size'),
+      color: formData.get('color'),
+      price: parseInt(formData.get('price')),
+      stock: parseInt(formData.get('stock')),
+      active: formData.has('active'),
+    };
+
+    try {
+      if (editingVariant) {
+        // Update existing variant
+        await apiRequest(`/admin/api/variants/${editingVariant.id}`, {
+          method: 'PATCH',
+          body: JSON.stringify(variantData),
+        });
+        toast('Variant updated successfully');
+      } else {
+        // Create new variant
+        await apiRequest(`/admin/api/products/${productId}/variants`, {
+          method: 'POST',
+          body: JSON.stringify(variantData),
+        });
+        toast('Variant created successfully');
+      }
+
+      hideModal();
+      await loadData();
+    } catch (error) {
+      console.error('Failed to save variant:', error);
+    }
+  }
+
+  // --- Edit variant ---
+  function editVariant(variantId) {
+    const variant = variants.find(v => v.id === variantId);
+    if (variant) {
+      showModal('Edit Variant', variant);
+    }
+  }
+
+  // --- Delete variant ---
+  async function deleteVariant(variantId) {
+    if (!confirm('Are you sure you want to delete this variant?')) return;
+
+    try {
+      await apiRequest(`/admin/api/variants/${variantId}`, {
+        method: 'DELETE',
+      });
+      toast('Variant deleted successfully');
+      await loadData();
+    } catch (error) {
+      console.error('Failed to delete variant:', error);
+    }
+  }
+
+  // --- Initialize ---
+  function initVariantsPage() {
+    // Modal events
+    $('#variantModal').addEventListener('click', (e) => {
+      if (e.target.matches('[data-close]')) hideModal();
+    });
+
+    // Form submission
+    $('#variantForm').addEventListener('submit', handleFormSubmit);
+
+    // Buttons
+    $('#refreshBtn').addEventListener('click', loadData);
+    $('#addVariantBtn').addEventListener('click', () => showModal('Add Variant'));
+
+    loadData();
+  }
+
+  // Make functions globally available
+  window.initVariantsPage = initVariantsPage;
+</script>
