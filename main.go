@@ -49,6 +49,7 @@ func main() {
 
 	// Serve Tailwind CSS locally to avoid COEP issues
 	app.Get("/tailwind.js", func(c fiber.Ctx) error {
+		c.Set("Cache-Control", "public, max-age=86400") // Cache for 1 day
 		return c.SendFile("./cloudflare-pages-frontend/tailwind.js")
 	})
 
