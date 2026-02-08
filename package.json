@@ -1,0 +1,20 @@
+{
+  "name": "oxlook-tests",
+  "version": "1.0.0",
+  "description": "Frontend tests for OXLOOK e-commerce platform",
+  "main": "test-frontend.js",
+  "scripts": {
+    "test": "node test-frontend.js",
+    "test:headless": "PUPPETEER_HEADLESS=true node test-frontend.js"
+  },
+  "keywords": [
+    "testing",
+    "puppeteer",
+    "e2e"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.58.2"
+  }
+}
