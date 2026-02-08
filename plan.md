@@ -95,10 +95,10 @@
 - [x] Store cart in `localStorage` (persist across reloads)
 - [x] Build checkout page/form (name, phone, address, city)
 - [x] Submit order via `POST /api/orders`
-- [ ] Show order confirmation with order ID
-- [ ] Add loading spinners for API calls
-- [ ] Add error handling/retry for failed API calls
-- [ ] Handle CORS properly in fetch calls
+- [x] Show order confirmation with order ID
+- [x] Add loading spinners for API calls
+- [x] Add error handling/retry for failed API calls
+- [x] Handle CORS properly in fetch calls
 
 ## Phase 8: Security & Validation
 

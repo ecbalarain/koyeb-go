@@ -187,6 +187,13 @@
     </footer>
   </main>
 
+  <!-- Toast notification -->
+  <div id="toast" class="fixed bottom-4 right-4 z-50 hidden">
+    <div class="rounded-2xl bg-zinc-900 px-4 py-3 text-sm text-white shadow-lg">
+      Message
+    </div>
+  </div>
+
   <!-- Mobile menu drawer -->
   <div id="menuOverlay" class="fixed inset-0 z-40 hidden">
     <div class="absolute inset-0 bg-zinc-900/30" data-close></div>
@@ -229,6 +236,23 @@
         <button class="mt-3 w-full rounded-2xl bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-zinc-800 focus:outline-none focus:ring-4 focus:ring-zinc-900/20" type="button" onclick="showCheckout()">Checkout</button>
         <button class="mt-2 w-full rounded-2xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-800 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-4 focus:ring-zinc-900/10" type="button" onclick="clearCart()">Clear cart</button>
         <p class="mt-3 text-xs text-zinc-500">Demo UI only — connect to your backend later.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product detail overlay -->
+  <div id="productOverlay" class="fixed inset-0 z-40 hidden">
+    <div class="absolute inset-0 bg-zinc-900/30" data-close></div>
+    <div class="absolute inset-4 top-16 md:inset-8 md:top-20 bg-white rounded-3xl shadow-2xl overflow-hidden">
+      <div class="flex items-center justify-between border-b border-zinc-200 px-4 py-3 md:px-6">
+        <p class="text-sm font-semibold">Product Details</p>
+        <button class="rounded-xl p-2 hover:bg-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-900/20" data-close aria-label="Close">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div id="productDetail" class="flex-1 overflow-auto p-4 md:p-6">
+        <!-- Product details injected by JS -->
       </div>
     </div>
   </div>
@@ -287,6 +311,27 @@
     </div>
   </div>
 
+  <!-- Order confirmation overlay -->
+  <div id="confirmationOverlay" class="fixed inset-0 z-40 hidden">
+    <div class="absolute inset-0 bg-zinc-900/30" data-close></div>
+    <div class="absolute inset-4 top-16 md:inset-8 md:top-20 bg-white rounded-3xl shadow-2xl overflow-hidden max-w-md mx-auto">
+      <div class="p-6 text-center">
+        <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <h3 class="mt-4 text-lg font-semibold text-zinc-900">Order Confirmed!</h3>
+        <p class="mt-2 text-sm text-zinc-600">Thank you for your order. We'll send you a confirmation email shortly.</p>
+        <div class="mt-4 rounded-2xl bg-zinc-50 p-4">
+          <p class="text-sm text-zinc-600">Order ID</p>
+          <p id="orderId" class="text-lg font-semibold text-zinc-900">#000000</p>
+        </div>
+        <button class="mt-6 w-full rounded-2xl bg-zinc-900 px-4 py-3 text-sm font-medium text-white shadow-sm hover:bg-zinc-800 focus:outline-none focus:ring-4 focus:ring-zinc-900/20" data-close type="button">
+          Continue Shopping
+        </button>
+      </div>
+    </div>
+  </div>
+
   <style>
     /* Tailwind-friendly utility class for chips */
     .chip { @apply rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-700 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-4 focus:ring-zinc-900/10; }
@@ -302,7 +347,8 @@
       sort: 'featured',
       cart: new Map(), // variant_id -> qty
       currentProduct: null,
-      loading: false
+      loading: false,
+      variantCache: new Map() // product_slug -> variants
     };
 
     // --- DOM helpers ---
@@ -310,20 +356,36 @@
     const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
     // --- API helpers ---
-    async function apiRequest(url, options = {}) {
-      try {
-        const response = await fetch(url, {
-          ...options,
-          headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
+    async function apiRequest(url, options = {}, retries = 2) {
+      // Use full API URL for cross-domain requests
+      const apiUrl = url.startsWith('http') ? url : `https://api.bhomanshah.com${url}`;
+      
+      for (let i = 0; i <= retries; i++) {
+        try {
+          const response = await fetch(apiUrl, {
+            ...options,
+            headers: {
+              'Content-Type': 'application/json',
+              ...options.headers
+            }
+          });
+          
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP ${response.status}: ${errorText || response.statusText}`);
           }
-        });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        return await response.json();
-      } catch (error) {
-        console.error('API request failed:', error);
-        throw error;
+          
+          return await response.json();
+        } catch (error) {
+          console.error(`API request failed (attempt ${i + 1}/${retries + 1}):`, error);
+          
+          if (i === retries) {
+            throw error;
+          }
+          
+          // Wait before retry (exponential backoff)
+          await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
+        }
       }
     }
 
@@ -356,7 +418,7 @@
         setLoading(true);
         const data = await apiRequest('/products.json');
         products = data;
-        renderGrid();
+        await renderGrid();
       } catch (error) {
         console.error('Failed to load products:', error);
         toast('Failed to load products');
@@ -370,7 +432,7 @@
           { id: 7, name: 'Scented Candle', slug: 'scented-candle', description: 'A soy wax candle', category: 'Home', images: ['/images/scented-candle.jpg'] },
           { id: 8, name: 'Notebook Set', slug: 'notebook-set', description: 'A set of premium notebooks', category: 'Basics', images: ['/images/notebook-set.jpg'] },
         ];
-        renderGrid();
+        await renderGrid();
       } finally {
         setLoading(false);
       }
@@ -378,6 +440,7 @@
 
     // --- Render product cards ---
     function productCard(p) {
+      const price = p.minPrice ? `$${p.minPrice}` : 'Price TBD';
       return `
         <article class="group rounded-3xl border border-zinc-200 bg-white p-3 shadow-sm transition hover:shadow-md cursor-pointer" onclick="showProductDetail(${p.id})">
           <div class="aspect-[4/3] overflow-hidden rounded-2xl bg-zinc-100">
@@ -388,7 +451,7 @@
               <h3 class="text-sm font-medium tracking-tight">${p.name}</h3>
               <p class="mt-1 text-xs text-zinc-500">${p.category}</p>
             </div>
-            <p class="text-sm font-semibold">From $${getMinPrice(p.id) || 'TBD'}</p>
+            <p class="text-sm font-semibold">${price}</p>
           </div>
           <div class="mt-3">
             <button class="w-full rounded-2xl bg-zinc-900 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-zinc-800 focus:outline-none focus:ring-4 focus:ring-zinc-900/20" type="button" onclick="event.stopPropagation(); showProductDetail(${p.id})">View Details</button>
@@ -398,9 +461,26 @@
     }
 
     // --- Get minimum price for a product ---
-    function getMinPrice(productId) {
-      // This will be updated when we load variants
-      return null; // For now
+    async function getMinPrice(productId) {
+      const product = products.find(p => p.id === productId);
+      if (!product) return null;
+
+      try {
+        let variants = state.variantCache.get(product.slug);
+        if (!variants) {
+          variants = await apiRequest(`/api/products/${product.slug}/variants`);
+          state.variantCache.set(product.slug, variants);
+        }
+        
+        const activeVariants = variants.filter(v => v.active && v.stock > 0);
+        if (activeVariants.length === 0) return null;
+        
+        const minPrice = Math.min(...activeVariants.map(v => v.price));
+        return (minPrice / 100).toFixed(2);
+      } catch (error) {
+        console.error('Failed to get min price:', error);
+        return null;
+      }
     }
 
     function filteredProducts() {
@@ -413,8 +493,8 @@
       }
 
       switch (state.sort) {
-        case 'price-asc': list.sort((a,b) => (getMinPrice(a.id) || 0) - (getMinPrice(b.id) || 0)); break;
-        case 'price-desc': list.sort((a,b) => (getMinPrice(b.id) || 0) - (getMinPrice(a.id) || 0)); break;
+        case 'price-asc': list.sort((a,b) => (parseFloat(a.minPrice) || 0) - (parseFloat(b.minPrice) || 0)); break;
+        case 'price-desc': list.sort((a,b) => (parseFloat(b.minPrice) || 0) - (parseFloat(a.minPrice) || 0)); break;
         case 'name-asc': list.sort((a,b) => a.name.localeCompare(b.name)); break;
         default: /* featured */ break;
       }
@@ -422,8 +502,14 @@
       return list;
     }
 
-    function renderGrid() {
+    async function renderGrid() {
       const list = filteredProducts();
+      
+      // Get prices for all products
+      await Promise.all(list.map(async (p) => {
+        p.minPrice = await getMinPrice(p.id);
+      }));
+      
       $('#grid').innerHTML = list.map(productCard).join('') || `
         <div class="col-span-full rounded-3xl border border-zinc-200 bg-white p-6 text-center text-sm text-zinc-600 shadow-sm">
           No products found.
@@ -701,7 +787,10 @@
         state.cart.clear();
         saveCart();
         closeOverlay($('#checkoutOverlay'));
-        toast(`Order placed! ID: ${response.order_id}`);
+        
+        // Show confirmation
+        $('#orderId').textContent = `#${response.order_id}`;
+        openOverlay($('#confirmationOverlay'));
 
         // Reset form
         $('#checkoutForm').reset();
@@ -889,30 +978,32 @@
 
       // Chips
       $$('.chip').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', async () => {
           state.chip = btn.dataset.chip;
           $$('.chip').forEach(b => b.classList.toggle('is-active', b === btn));
-          renderGrid();
+          await renderGrid();
         });
       });
 
       // Search
-      const search = (val) => { state.q = val; renderGrid(); };
+      const search = async (val) => { state.q = val; await renderGrid(); };
       $('#searchInput').addEventListener('input', (e) => search(e.target.value));
       $('#searchInputMobile').addEventListener('input', (e) => search(e.target.value));
 
       // Sort
-      $('#sortSelect').addEventListener('change', (e) => { state.sort = e.target.value; renderGrid(); });
+      $('#sortSelect').addEventListener('change', async (e) => { state.sort = e.target.value; await renderGrid(); });
 
       // Overlays
       const menuOverlay = $('#menuOverlay');
       const cartOverlay = $('#cartOverlay');
       const productOverlay = $('#productOverlay');
       const checkoutOverlay = $('#checkoutOverlay');
+      const confirmationOverlay = $('#confirmationOverlay');
       wireOverlay(menuOverlay);
       wireOverlay(cartOverlay);
       wireOverlay(productOverlay);
       wireOverlay(checkoutOverlay);
+      wireOverlay(confirmationOverlay);
 
       $('#menuBtn').addEventListener('click', () => openOverlay(menuOverlay));
       $('#cartBtn').addEventListener('click', () => openOverlay(cartOverlay));
