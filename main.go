@@ -47,6 +47,16 @@ func main() {
 		return c.JSON(fiber.Map{"status": "ok"})
 	})
 
+	// Serve Tailwind CSS locally to avoid COEP issues
+	app.Get("/tailwind.js", func(c fiber.Ctx) error {
+		return c.SendFile("./cloudflare-pages-frontend/tailwind.js")
+	})
+
+	// Serve favicon
+	app.Get("/favicon.ico", func(c fiber.Ctx) error {
+		return c.SendFile("./cloudflare-pages-frontend/favicon.ico")
+	})
+
 	// API routes
 	api := app.Group("/api")
 
