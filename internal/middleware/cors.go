@@ -9,12 +9,12 @@ import (
 
 // CORS returns a configured CORS middleware.
 func CORS(allowOrigin string) fiber.Handler {
-	// Allow all origins for development/preview
+	//Allow all origins for development/preview
 	// In production, you can restrict this to specific domains
 	return cors.New(cors.Config{
-		AllowOrigins:     "*",  // Allow all origins (Cloudflare Pages previews + production)
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-API-Key"},
-		AllowMethods:     []string{"GET", "POST", "PATCH", "DELETE", "OPTIONS"},
+		AllowOrigins:     "*", // Allow all origins
+		AllowHeaders:     "Origin,Content-Type,Accept,Authorization,X-API-Key",
+		AllowMethods:     "GET,POST,PATCH,DELETE,OPTIONS",
 		AllowCredentials: false,
 		MaxAge:           3600,
 	})
