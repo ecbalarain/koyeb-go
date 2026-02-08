@@ -31,6 +31,10 @@ func main() {
 		ReadBufferSize: 4096,            // 4 KB read buffer
 	})
 
+	// Log configuration for debugging
+	log.Printf("CORS Origin: %s", cfg.CORSOrigin)
+	log.Printf("Environment: %s", cfg.Environment)
+
 	// Middleware
 	app.Use(middleware.Recover())
 	app.Use(middleware.Logger())
