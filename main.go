@@ -23,7 +23,7 @@ func main() {
 	defer db.Close()
 
 	// Initialize handlers
-	h := handlers.NewHandler(db, cfg.AdminSecret, cfg.JWTSecret, cfg.JWTExpiry)
+	h := handlers.NewHandler(db, cfg.AdminSecret, cfg.JWTSecret, cfg.JWTExpiry, cfg.EmailHost, cfg.EmailPort, cfg.EmailUser, cfg.EmailPass, cfg.EmailFrom)
 
 	app := fiber.New(fiber.Config{
 		AppName:        "OXLOOK API",

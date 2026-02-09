@@ -289,6 +289,11 @@
           <input type="text" name="city" required class="mt-1 w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2.5 text-sm shadow-sm placeholder:text-zinc-400 focus:border-zinc-300 focus:outline-none focus:ring-4 focus:ring-zinc-900/10" placeholder="City" />
         </div>
 
+        <div>
+          <label class="block text-sm font-medium text-zinc-900">Email</label>
+          <input type="email" name="email" required class="mt-1 w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2.5 text-sm shadow-sm placeholder:text-zinc-400 focus:border-zinc-300 focus:outline-none focus:ring-4 focus:ring-zinc-900/10" placeholder="your@email.com" />
+        </div>
+
         <div class="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
           <div class="flex items-center justify-between text-sm">
             <span class="text-zinc-600">Subtotal</span>
@@ -818,6 +823,7 @@
           customer_phone: formData.get('phone'),
           customer_address: formData.get('address'),
           customer_city: formData.get('city'),
+          customer_email: formData.get('email'),
           items: items
         };
 

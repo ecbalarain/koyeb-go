@@ -11,6 +11,7 @@ import (
 	"github.com/koyeb/example-golang/internal/middleware"
 	"github.com/koyeb/example-golang/internal/models"
 	"github.com/koyeb/example-golang/internal/repository"
+	"github.com/koyeb/example-golang/internal/services"
 	"github.com/koyeb/example-golang/internal/validator"
 )
 
@@ -23,10 +24,11 @@ type Handler struct {
 	adminSecret  string
 	jwtSecret    string
 	jwtExpiry    int
+	emailService *services.EmailService
 }
 
 // NewHandler creates a new handler instance.
-func NewHandler(db *sql.DB, adminSecret, jwtSecret string, jwtExpiry int) *Handler {
+func NewHandler(db *sql.DB, adminSecret, jwtSecret string, jwtExpiry int, emailHost string, emailPort int, emailUser, emailPass, emailFrom string) *Handler {
 	return &Handler{
 		productRepo:  repository.NewProductRepository(db),
 		variantRepo:  repository.NewVariantRepository(db),
@@ -35,6 +37,7 @@ func NewHandler(db *sql.DB, adminSecret, jwtSecret string, jwtExpiry int) *Handl
 		adminSecret:  adminSecret,
 		jwtSecret:    jwtSecret,
 		jwtExpiry:    jwtExpiry,
+		emailService: services.NewEmailService(emailHost, emailPort, emailUser, emailPass, emailFrom),
 	}
 }
 
@@ -187,10 +190,11 @@ func (h *Handler) CreateOrder(c fiber.Ctx) error {
 	req.CustomerPhone = validator.Sanitize(req.CustomerPhone)
 	req.CustomerAddress = validator.Sanitize(req.CustomerAddress)
 	req.CustomerCity = validator.Sanitize(req.CustomerCity)
+	req.CustomerEmail = validator.Sanitize(req.CustomerEmail)
 	req.Notes = validator.Sanitize(req.Notes)
 
 	// Validate sanitized inputs are not empty (in case input was all malicious characters)
-	if req.CustomerName == "" || req.CustomerPhone == "" || req.CustomerAddress == "" || req.CustomerCity == "" {
+	if req.CustomerName == "" || req.CustomerPhone == "" || req.CustomerAddress == "" || req.CustomerCity == "" || req.CustomerEmail == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid customer information provided",
 		})
@@ -254,6 +258,7 @@ func (h *Handler) CreateOrder(c fiber.Ctx) error {
 		CustomerPhone:   req.CustomerPhone,
 		CustomerAddress: req.CustomerAddress,
 		CustomerCity:    req.CustomerCity,
+		CustomerEmail:   req.CustomerEmail,
 		Total:           total,
 		Status:          "new",
 		Notes:           req.Notes,
@@ -272,6 +277,9 @@ func (h *Handler) CreateOrder(c fiber.Ctx) error {
 			"error": "Failed to create order",
 		})
 	}
+
+	// Send confirmation email (non-blocking)
+	_ = h.emailService.SendOrderConfirmation(req.CustomerEmail, req.CustomerName, order.ID, order.Total)
 
 	// Return order confirmation
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{

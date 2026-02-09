@@ -27,13 +27,13 @@ func (r *OrderRepository) Create(order *models.Order, items []models.OrderItem) 
 
 	// Insert order
 	query := `
-		INSERT INTO orders (customer_name, customer_phone, customer_address, customer_city, total, status, notes)
-		VALUES (?, ?, ?, ?, ?, ?, ?)
+		INSERT INTO orders (customer_name, customer_phone, customer_address, customer_city, customer_email, total, status, notes)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 	`
 
 	result, err := tx.Exec(query,
 		order.CustomerName, order.CustomerPhone, order.CustomerAddress,
-		order.CustomerCity, order.Total, order.Status, order.Notes,
+		order.CustomerCity, order.CustomerEmail, order.Total, order.Status, order.Notes,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to create order: %w", err)
@@ -91,7 +91,7 @@ func (r *OrderRepository) Create(order *models.Order, items []models.OrderItem) 
 // GetAll returns all orders, optionally filtered by status.
 func (r *OrderRepository) GetAll(status string) ([]models.Order, error) {
 	query := `
-		SELECT id, customer_name, customer_phone, customer_address, customer_city,
+		SELECT id, customer_name, customer_phone, customer_address, customer_city, customer_email,
 		       total, status, notes, created_at, updated_at
 		FROM orders
 	`
@@ -114,7 +114,7 @@ func (r *OrderRepository) GetAll(status string) ([]models.Order, error) {
 	for rows.Next() {
 		var o models.Order
 		err := rows.Scan(
-			&o.ID, &o.CustomerName, &o.CustomerPhone, &o.CustomerAddress, &o.CustomerCity,
+			&o.ID, &o.CustomerName, &o.CustomerPhone, &o.CustomerAddress, &o.CustomerCity, &o.CustomerEmail,
 			&o.Total, &o.Status, &o.Notes, &o.CreatedAt, &o.UpdatedAt,
 		)
 		if err != nil {
@@ -133,7 +133,7 @@ func (r *OrderRepository) GetAll(status string) ([]models.Order, error) {
 // GetByID returns an order by its ID.
 func (r *OrderRepository) GetByID(id int64) (*models.Order, error) {
 	query := `
-		SELECT id, customer_name, customer_phone, customer_address, customer_city,
+		SELECT id, customer_name, customer_phone, customer_address, customer_city, customer_email,
 		       total, status, notes, created_at, updated_at
 		FROM orders
 		WHERE id = ?
@@ -141,7 +141,7 @@ func (r *OrderRepository) GetByID(id int64) (*models.Order, error) {
 
 	var o models.Order
 	err := r.db.QueryRow(query, id).Scan(
-		&o.ID, &o.CustomerName, &o.CustomerPhone, &o.CustomerAddress, &o.CustomerCity,
+		&o.ID, &o.CustomerName, &o.CustomerPhone, &o.CustomerAddress, &o.CustomerCity, &o.CustomerEmail,
 		&o.Total, &o.Status, &o.Notes, &o.CreatedAt, &o.UpdatedAt,
 	)
 	if err == sql.ErrNoRows {

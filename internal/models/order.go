@@ -9,6 +9,7 @@ type Order struct {
 	CustomerPhone   string    `json:"customer_phone"`
 	CustomerAddress string    `json:"customer_address"`
 	CustomerCity    string    `json:"customer_city"`
+	CustomerEmail   string    `json:"customer_email"`
 	Total           int64     `json:"total"` // total in smallest currency unit
 	Status          string    `json:"status"`  // new, confirmed, shipped, canceled
 	Notes           string    `json:"notes"`
@@ -33,6 +34,7 @@ type CreateOrderRequest struct {
 	CustomerPhone   string             `json:"customer_phone" validate:"required,min=10,max=15"`
 	CustomerAddress string             `json:"customer_address" validate:"required,min=5,max=500"`
 	CustomerCity    string             `json:"customer_city" validate:"required,min=2,max=100"`
+	CustomerEmail   string             `json:"customer_email" validate:"required,email"`
 	Notes           string             `json:"notes" validate:"max=500"`
 	Items           []CreateOrderItem  `json:"items" validate:"required,min=1,dive"`
 }
