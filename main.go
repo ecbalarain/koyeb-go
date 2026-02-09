@@ -23,7 +23,7 @@ func main() {
 	defer db.Close()
 
 	// Initialize handlers
-	h := handlers.NewHandler(db)
+	h := handlers.NewHandler(db, cfg.AdminSecret, cfg.JWTSecret, cfg.JWTExpiry)
 
 	app := fiber.New(fiber.Config{
 		AppName:        "OXLOOK API",
@@ -92,8 +92,11 @@ func main() {
 		return c.SendFile("./cloudflare-pages-frontend/products.json")
 	})
 
-	// Admin API routes (protected by API key with constant-time comparison)
-	admin := app.Group("/admin/api", middleware.AdminAuth(cfg.AdminSecret))
+	// Admin login (public, no auth required) — returns JWT token
+	app.Post("/admin/api/login", middleware.StrictRateLimit(10, 1*time.Minute), h.AdminLogin)
+
+	// Admin API routes (protected by JWT or legacy API key)
+	admin := app.Group("/admin/api", middleware.AdminAuth(cfg.AdminSecret, cfg.JWTSecret))
 
 	// GET /admin/products — list all products (including inactive)
 	admin.Get("/products", h.AdminGetProducts)

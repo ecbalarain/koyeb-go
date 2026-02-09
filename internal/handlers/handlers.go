@@ -1,12 +1,14 @@
 package handlers
 
 import (
+	"crypto/subtle"
 	"database/sql"
 	"fmt"
 	"strconv"
 	"strings"
 
 	"github.com/gofiber/fiber/v3"
+	"github.com/koyeb/example-golang/internal/middleware"
 	"github.com/koyeb/example-golang/internal/models"
 	"github.com/koyeb/example-golang/internal/repository"
 	"github.com/koyeb/example-golang/internal/validator"
@@ -18,16 +20,63 @@ type Handler struct {
 	variantRepo  *repository.VariantRepository
 	orderRepo    *repository.OrderRepository
 	cacheManager *CacheManager
+	adminSecret  string
+	jwtSecret    string
+	jwtExpiry    int
 }
 
 // NewHandler creates a new handler instance.
-func NewHandler(db *sql.DB) *Handler {
+func NewHandler(db *sql.DB, adminSecret, jwtSecret string, jwtExpiry int) *Handler {
 	return &Handler{
 		productRepo:  repository.NewProductRepository(db),
 		variantRepo:  repository.NewVariantRepository(db),
 		orderRepo:    repository.NewOrderRepository(db),
 		cacheManager: NewCacheManager(),
+		adminSecret:  adminSecret,
+		jwtSecret:    jwtSecret,
+		jwtExpiry:    jwtExpiry,
 	}
+}
+
+// AdminLogin authenticates admin with API key and returns a JWT token.
+// POST /admin/api/login
+func (h *Handler) AdminLogin(c fiber.Ctx) error {
+	var req struct {
+		APIKey string `json:"api_key"`
+	}
+
+	if err := c.Bind().Body(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid request body",
+		})
+	}
+
+	if req.APIKey == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "API key is required",
+		})
+	}
+
+	// Validate API key using constant-time comparison
+	if subtle.ConstantTimeCompare([]byte(req.APIKey), []byte(h.adminSecret)) != 1 {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Invalid API key",
+		})
+	}
+
+	// Generate JWT token
+	token, expiresAt, err := middleware.GenerateJWT(h.jwtSecret, h.jwtExpiry)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to generate token",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"token":      token,
+		"expires_at": expiresAt,
+		"message":    "Login successful",
+	})
 }
 
 // GetProducts returns a list of active products.

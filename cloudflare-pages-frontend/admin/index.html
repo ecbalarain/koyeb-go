@@ -139,7 +139,8 @@
     // --- Global state ---
     const state = {
       currentPage: 'products',
-      apiKey: localStorage.getItem('adminApiKey') || '',
+      token: localStorage.getItem('adminToken') || '',
+      apiKey: localStorage.getItem('adminApiKey') || '', // legacy fallback
       baseURL: window.location.origin,
     };
 
@@ -163,14 +164,33 @@
     // --- API helpers ---
     window.apiRequest = async function apiRequest(endpoint, options = {}) {
       const url = `${state.baseURL}${endpoint}`;
+      
+      // Build auth headers: prefer JWT, fallback to legacy API key
+      const authHeaders = {};
+      if (state.token) {
+        authHeaders['Authorization'] = `Bearer ${state.token}`;
+      } else if (state.apiKey) {
+        authHeaders['X-API-Key'] = state.apiKey;
+      }
+
       const headers = {
         'Content-Type': 'application/json',
-        'X-API-Key': state.apiKey,
+        ...authHeaders,
         ...options.headers,
       };
 
       try {
         const response = await fetch(url, { ...options, headers });
+        
+        // Handle token expiry — redirect to login
+        if (response.status === 401) {
+          localStorage.removeItem('adminToken');
+          localStorage.removeItem('adminTokenExpiry');
+          localStorage.removeItem('adminApiKey');
+          window.location.href = '/admin/login';
+          return;
+        }
+
         const data = await response.json();
 
         if (!response.ok) {
@@ -205,8 +225,17 @@
 
     // --- Auth ---
     function logout() {
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('adminTokenExpiry');
       localStorage.removeItem('adminApiKey');
       window.location.href = '/admin/login';
+    }
+
+    // Check if token is expired
+    function isTokenExpired() {
+      const expiry = localStorage.getItem('adminTokenExpiry');
+      if (!expiry) return true;
+      return new Date(expiry) <= new Date();
     }
 
     // --- Page loading ---
@@ -266,9 +295,15 @@
 
     // --- Init ---
     function init() {
-      // Check if logged in
-      if (!state.apiKey) {
+      // Check if logged in (JWT token or legacy API key)
+      if (!state.token && !state.apiKey) {
         window.location.href = '/admin/login';
+        return;
+      }
+
+      // Check if JWT token is expired
+      if (state.token && isTokenExpired()) {
+        logout();
         return;
       }
 

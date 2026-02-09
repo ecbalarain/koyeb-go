@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
@@ -12,6 +13,8 @@ type Config struct {
 	DatabaseURL string
 	CORSOrigin  string
 	AdminSecret string
+	JWTSecret   string
+	JWTExpiry   int // JWT token expiry in hours
 	Environment string
 }
 
@@ -20,11 +23,18 @@ func Load() *Config {
 	// Load .env file if it exists; ignore error in production where env vars are set externally.
 	_ = godotenv.Load()
 
+	jwtExpiry, _ := strconv.Atoi(getEnv("JWT_EXPIRY_HOURS", "24"))
+	if jwtExpiry <= 0 {
+		jwtExpiry = 24
+	}
+
 	return &Config{
 		Port:        getEnv("PORT", "8080"),
 		DatabaseURL: getEnv("DATABASE_URL", ""),
 		CORSOrigin:  getEnv("CORS_ORIGIN", "http://localhost:3000"),
 		AdminSecret: getEnv("ADMIN_SECRET", ""),
+		JWTSecret:   getEnv("JWT_SECRET", ""),
+		JWTExpiry:   jwtExpiry,
 		Environment: getEnv("ENVIRONMENT", "development"),
 	}
 }

@@ -5,7 +5,60 @@
 ### 1. Fragile Admin Authentication
 *   **Issue:** The admin panel uses a static API Secret (`X-API-Key`) stored in the browser (likely `localStorage`) and sent via headers.
 *   **Risk:** This simplifies access (no specialized auth server), but if an attacker obtains this key (via XSS or network intercept), they have full, permanent control over the store. There is no mechanism to "expire" a session without rotating the server-side secret (which breaks access for everyone).
-*   **Recommended Action:** Implement proper session-based auth (JWT or HttpOnly cookies) for the admin panel.
+*   **Recommended Plan to possible fixes:** Implement proper session-based auth (JWT or HttpOnly cookies) for the admin panel.
+
+#### Detailed Implementation Plan for Proper Admin Authentication
+To address the fragile API key auth while keeping the API "tiny" (as per README.md), implement JWT-based authentication. This adds lightweight session management without requiring a full auth server or database sessions.
+
+**Why JWT fits the "tiny API" plan:**
+- Stateless: No server-side session storage needed.
+- Lightweight: Uses a small library (`github.com/golang-jwt/jwt/v5`).
+- Secure: Tokens can expire, be revoked via secret rotation, and include claims.
+- Compatible: Works with the existing Fiber framework and middleware.
+
+**Step-by-Step Implementation:**
+
+1. **Install JWT Library:**
+   - Add `go get github.com/golang-jwt/jwt/v5` to `go.mod`.
+
+2. **Update Config:**
+   - Add `JWT_SECRET` and `JWT_EXPIRY` (e.g., 24 hours) to environment variables.
+   - Load in `config/config.go`.
+
+3. **Create Login Endpoint:**
+   - Add `POST /admin/login` (public, no auth required).
+   - Accept JSON: `{"api_key": "secret"}`.
+   - Validate API key against `ADMIN_SECRET`.
+   - If valid, generate JWT with claims (e.g., admin role, expiry).
+   - Return JWT in response (or set HttpOnly cookie).
+
+4. **Update AdminAuth Middleware:**
+   - Replace API key check with JWT validation.
+   - Extract token from `Authorization: Bearer <token>` header or HttpOnly cookie.
+   - Verify signature and expiry.
+   - On failure, return 401.
+
+5. **Add Logout/Revoke (Optional):**
+   - For JWT, implement token blacklisting if needed (simple in-memory map for tiny API).
+   - Or use short expiry and secret rotation for revocation.
+
+6. **Frontend Changes:**
+   - Store JWT in HttpOnly cookie (secure) or localStorage (less secure but simpler).
+   - Send in headers for API calls.
+   - Handle token expiry with refresh logic if needed.
+
+**Alternative: HttpOnly Cookies with Server Sessions**
+- If preferring server-side, use Fiber's session middleware with Redis (but this adds dependency, less "tiny").
+- Simpler: Use signed cookies for stateless sessions.
+
+**Security Benefits:**
+- Tokens expire (no permanent access).
+- Can be invalidated by changing secret.
+- Protects against XSS if using HttpOnly cookies.
+
+**Estimated Effort:** 2-4 hours for basic JWT implementation, keeping the API tiny.
+
+
 
 ### 2. Scalability Bottleneck (Pagination)
 *   **Issue:** The `GetProducts` handler calls `productRepo.GetAll(true)`, which loads **every single product** into memory and sends them all to the client.
@@ -94,3 +147,39 @@
 *   **Issue:** `CORS(allowOrigin string)` ignores its argument and always allows `*`.
 *   **Risk:** In production, this defeats intended origin restrictions.
 *   **Recommended Action:** Honor `allowOrigin` from config (and allow a comma-separated list if needed).
+
+---
+
+## Actionable Tasks from Codebase Analysis ( GROK )
+
+Based on direct code examination, here are prioritized actionable tasks to address identified shortcomings:
+
+### **High Priority (Security & Scalability)**
+- [ ] **Implement Proper Admin Authentication**: Replace static API key with JWT-based sessions or HttpOnly cookies to prevent permanent access if key is compromised.
+- [ ] **Add Pagination to Product API**: Modify `GET /api/products` to support `limit` and `offset` query parameters to prevent loading all products into memory.
+- [ ] **Fix CORS Configuration**: Update `middleware/cors.go` to respect the `allowOrigin` parameter instead of hardcoding `*`.
+- [ ] **Validate Variant Updates**: Add validation in `AdminUpdateVariant` to ensure `price > 0` and `stock >= 0`, preventing negative values.
+- [ ] **Address Order Creation Race Condition**: Ensure stock decrement SQL includes `AND active = TRUE` to prevent orders on deactivated variants.
+
+### **Medium Priority (Performance & Reliability)**
+- [ ] **Fix Cache Invalidation**: Integrate `CacheManager.ShouldInvalidate` checks in `GetProductVariants` or remove in-memory cache and rely on CDN.
+- [ ] **Add Transactional Emails**: Integrate an email service (e.g., SendGrid) to send order confirmations to customers.
+- [ ] **Implement Search Functionality**: Add `/api/products?search=...` endpoint for backend-powered product search.
+- [ ] **Refactor Handler Bloat**: Split `handlers.go` into separate files: `product_handler.go`, `order_handler.go`, `admin_handler.go`, `cache_handler.go`.
+- [ ] **Use Environment Variables for Paths**: Replace hardcoded `./cloudflare-pages-frontend` with configurable paths via env vars.
+
+### **Low Priority (UX & Quality)**
+- [ ] **Improve Frontend Build Process**: Replace runtime Tailwind with a build step using Vite/PostCSS to generate optimized CSS.
+- [ ] **Add Cart Persistence**: Store cart in localStorage or sessionStorage to survive page refreshes.
+- [ ] **Implement Unit Tests**: Add Go unit tests for `internal/models` and `internal/repository` to cover order calculations and stock logic.
+- [ ] **Validate Product Images JSON**: Ensure `images` field is valid JSON array in product create/update handlers.
+- [ ] **Add Client-Side Stock Validation**: Check variant availability before adding to cart to improve UX.
+- [ ] **Make API URLs Configurable**: Replace hardcoded `api.bhomanshah.com` with environment-based configuration in frontend.
+- [ ] **Add Order Status Notifications**: Send emails or notifications when order status changes (confirmed, shipped).
+- [ ] **Implement Inventory Alerts**: Notify admins when variant stock falls below a threshold.
+- [ ] **Add Error Handling Improvements**: Standardize error responses and add better client-side error handling for API failures.
+- [ ] **SEO Enhancements**: Consider SSG or SSR for product pages to improve search engine indexing.
+
+---
+
+*Last Updated: February 9, 2026*
