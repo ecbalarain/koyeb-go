@@ -279,7 +279,7 @@ func (h *Handler) CreateOrder(c fiber.Ctx) error {
 	}
 
 	// Send confirmation email (non-blocking)
-	_ = h.emailService.SendOrderConfirmation(req.CustomerEmail, req.CustomerName, order.ID, order.Total)
+	_ = h.emailService.SendOrderConfirmation(req.CustomerEmail, req.CustomerName, order.ID, order.Total, orderItems)
 
 	// Return order confirmation
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
