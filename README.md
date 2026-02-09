@@ -216,6 +216,22 @@ Result:
 
 ✅ Simple, predictable.
 
+### Common task C2: Sync products into the API (when products.json changes)
+
+1. Run migrations (only needed if new migrations were added)
+2. Import products into the database
+
+```bash
+go run ./cmd/migrate
+go run ./cmd/import-products
+```
+
+Optional: deactivate products not present in products.json
+
+```bash
+go run ./cmd/import-products --deactivate-missing
+```
+
 ### Common task D: Remove/discontinue a product
 
 1. Admin: disable product (or disable all variants)

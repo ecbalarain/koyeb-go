@@ -1,58 +1,323 @@
 [
   {
-    "id": 2,
-    "name": "Stone Mug",
-    "slug": "stone-mug",
-    "description": "A sleek stoneware mug that keeps drinks hot or cold.",
-    "category": "Home",
-    "images": ["/images/stone-mug.jpg"]
+    "id": 401,
+    "name": "\"Black Suede Kids' Shirt\"",
+    "slug": "black-suede-kids-shirt",
+    "description": "A black kids' shirt is a versatile and comfortable wardrobe staple made from soft, breathable fabrics like cotton. It comes in various styles, long-sleeve, suitable for different seasons. The shirt can feature simple designs or fun graphics, making it appealing to young children. Its neutral black color is easy to pair with other clothing and hides stains well, making it perfect for everyday wear.",
+    "shortDescription": "A black kids' shirt is a versatile and comfortable wardrobe staple made from soft, breathable fabrics like cotton.",
+    "category": "Kids",
+    "categories": [
+      "Kids",
+      "New Arrivals"
+    ],
+    "tags": [
+      "Suede Shirt"
+    ],
+    "images": [
+      "/assets/oxlook/black-suede-kids-shirt-01.png"
+    ],
+    "sizes": [
+      "12 to 18 Months",
+      "1 to 2 Years",
+      "2 to 3 Years",
+      "3 to 4 Years"
+    ],
+    "attributes": [
+      {
+        "name": "Size",
+        "values": [
+          "12 to 18 Months",
+          "1 to 2 Years",
+          "2 to 3 Years",
+          "3 to 4 Years"
+        ]
+      }
+    ],
+    "prices": {
+      "currency": "PKR",
+      "price": 1199,
+      "regularPrice": 1800,
+      "salePrice": 1199
+    },
+    "sourceUrl": "https://oxlook.com/product/black-suede-kids-shirt/",
+    "inStock": true
   },
   {
-    "id": 3,
-    "name": "Minimal Tee",
-    "slug": "minimal-tee",
-    "description": "A comfortable cotton t-shirt with a minimalist design.",
-    "category": "Basics",
-    "images": ["/images/minimal-tee.jpg"]
+    "id": 346,
+    "name": "\"VersaBlue Jacket\"",
+    "slug": "346",
+    "description": "A blue jacket is a versatile and stylish outerwear piece that can range from casual to formal. Typically made from materials like denim, cotton, wool, or synthetic fabrics, the jacket is characterized by its vibrant blue color, which can vary from deep navy to lighter shades of sky blue or turquoise. A blue jacket often features a front zipper or button closure, along with pockets for practicality. Some designs include a hood, adjustable cuffs, and a tailored or relaxed fit, depending on the intended use. The blue hue adds a fresh, clean look to any outfit, making it a popular choice for both everyday wear and dressier occasions.",
+    "shortDescription": "Some designs include a hood, adjustable cuffs, and a tailored or relaxed fit, depending on the intended use. The blue hue adds a fresh, clean look to any outfit, making it a popular choice for both everyday wear and dressier occasions.",
+    "category": "Men",
+    "categories": [
+      "Men",
+      "New Arrivals"
+    ],
+    "tags": [],
+    "images": [
+      "/assets/oxlook/346-01.jpg",
+      "/assets/oxlook/346-02.jpg",
+      "/assets/oxlook/346-03.jpg"
+    ],
+    "sizes": [
+      "Large",
+      "Medium",
+      "Small"
+    ],
+    "attributes": [
+      {
+        "name": "Size",
+        "values": [
+          "Large",
+          "Medium",
+          "Small"
+        ]
+      }
+    ],
+    "prices": {
+      "currency": "PKR",
+      "price": 3499,
+      "regularPrice": 5000,
+      "salePrice": 3499
+    },
+    "sourceUrl": "https://oxlook.com/product/346/",
+    "inStock": true
   },
   {
-    "id": 4,
-    "name": "Desk Lamp",
-    "slug": "desk-lamp",
-    "description": "A modern LED desk lamp with adjustable brightness.",
-    "category": "Home",
-    "images": ["/images/desk-lamp.jpg"]
+    "id": 223,
+    "name": "Dual-Tone Black and White Comfort Hoodie",
+    "slug": "dual-tone-black-and-white-comfort-hoodie",
+    "description": "Product Name: Dual-Tone Black and White Comfort Hoodie Description: This Black and White Hoodie is the ultimate blend of comfort and style, making it a wardrobe essential for any season. Crafted from premium, soft-touch fabric, it provides superior warmth and a cozy feel. Featuring a clean, minimalist design with a spacious front pocket and adjustable drawstring hood, it's perfect for casual outings, lounging at home, or layering on colder days. The breathable and durable material ensures long-lasting wear while maintaining its fresh look. Elevate your everyday style with this versatile Black and White Hoodie.",
+    "shortDescription": "The breathable and durable material ensures long-lasting wear while maintaining its fresh look. Elevate your everyday style with this versatile Black and White Hoodie.",
+    "category": "Men",
+    "categories": [
+      "Men",
+      "New Arrivals"
+    ],
+    "tags": [
+      "Hoodies"
+    ],
+    "images": [
+      "/assets/oxlook/dual-tone-black-and-white-comfort-hoodie-01.webp",
+      "/assets/oxlook/dual-tone-black-and-white-comfort-hoodie-02.webp",
+      "/assets/oxlook/dual-tone-black-and-white-comfort-hoodie-03.webp",
+      "/assets/oxlook/dual-tone-black-and-white-comfort-hoodie-04.webp"
+    ],
+    "sizes": [
+      "Large",
+      "Medium",
+      "Small"
+    ],
+    "attributes": [
+      {
+        "name": "Size",
+        "values": [
+          "Large",
+          "Medium",
+          "Small"
+        ]
+      }
+    ],
+    "prices": {
+      "currency": "PKR",
+      "price": 1499,
+      "regularPrice": 2499,
+      "salePrice": 1499
+    },
+    "sourceUrl": "https://oxlook.com/product/dual-tone-black-and-white-comfort-hoodie/",
+    "inStock": true
   },
   {
-    "id": 5,
-    "name": "Wireless Charger",
-    "slug": "wireless-charger",
-    "description": "A fast wireless charger compatible with all devices.",
-    "category": "Tech",
-    "images": ["/images/wireless-charger.jpg"]
+    "id": 218,
+    "name": "Classic White Comfort Hoodie",
+    "slug": "classic-white-comfort-hoodie",
+    "description": "This White Hoodie is the ultimate blend of comfort and style, making it a wardrobe essential for any season. Crafted from premium, soft-touch fabric, it provides superior warmth and a cozy feel. Featuring a clean, minimalist design with a spacious front pocket and adjustable drawstring hood, it's perfect for casual outings, lounging at home, or layering on colder days. The breathable and durable material ensures long-lasting wear while maintaining its fresh look. Elevate your everyday style with this versatile White Hoodie.",
+    "shortDescription": "The breathable and durable material ensures long-lasting wear while maintaining its fresh look. Elevate your everyday style with this versatile White Hoodie.",
+    "category": "Uncategorized",
+    "categories": [],
+    "tags": [],
+    "images": [
+      "/assets/oxlook/classic-white-comfort-hoodie-01.webp",
+      "/assets/oxlook/classic-white-comfort-hoodie-02.webp",
+      "/assets/oxlook/classic-white-comfort-hoodie-03.jpg",
+      "/assets/oxlook/classic-white-comfort-hoodie-04.jpg",
+      "/assets/oxlook/classic-white-comfort-hoodie-05.jpg"
+    ],
+    "sizes": [
+      "Large",
+      "Medium",
+      "Small"
+    ],
+    "attributes": [
+      {
+        "name": "Size",
+        "values": [
+          "Large",
+          "Medium",
+          "Small"
+        ]
+      }
+    ],
+    "prices": {
+      "currency": "PKR",
+      "price": 1499,
+      "regularPrice": 2499,
+      "salePrice": 1499
+    },
+    "sourceUrl": "https://oxlook.com/product/classic-white-comfort-hoodie/",
+    "inStock": true
   },
   {
-    "id": 6,
-    "name": "Key Organizer",
-    "slug": "key-organizer",
-    "description": "A leather key organizer with multiple compartments.",
-    "category": "Tech",
-    "images": ["/images/key-organizer.jpg"]
+    "id": 212,
+    "name": "Off-White Performance Tracksuit",
+    "slug": "off-white-performance-tracksuit",
+    "description": "This Off-White Tracksuit offers a sleek and stylish design, perfect for any athletic activity or casual wear. Made with high-quality materials, it provides both comfort and durability. With its breathable fabric and flexible fit, it allows for optimal performance while maintaining a professional look. Upgrade your wardrobe with this must-have piece.",
+    "shortDescription": "Made with high quality materials, it provides both comfort and durability.",
+    "category": "Kids",
+    "categories": [
+      "Kids"
+    ],
+    "tags": [
+      "Tracksuit"
+    ],
+    "images": [
+      "/assets/oxlook/off-white-performance-tracksuit-01.jpg",
+      "/assets/oxlook/off-white-performance-tracksuit-02.jpg",
+      "/assets/oxlook/off-white-performance-tracksuit-03.jpg",
+      "/assets/oxlook/off-white-performance-tracksuit-04.jpg"
+    ],
+    "sizes": [
+      "12 to 18 Months",
+      "1 to 2 Years",
+      "2 to 3 Years",
+      "3 to 4 Years",
+      "4 to 5 Years",
+      "5 to 6 Years",
+      "7 to 8 Years",
+      "9 to 10 Years",
+      "11 to 12 Years"
+    ],
+    "attributes": [
+      {
+        "name": "Size",
+        "values": [
+          "12 to 18 Months",
+          "1 to 2 Years",
+          "2 to 3 Years",
+          "3 to 4 Years",
+          "4 to 5 Years",
+          "5 to 6 Years",
+          "7 to 8 Years",
+          "9 to 10 Years",
+          "11 to 12 Years"
+        ]
+      }
+    ],
+    "prices": {
+      "currency": "PKR",
+      "price": 2499,
+      "regularPrice": 3499,
+      "salePrice": 2499
+    },
+    "sourceUrl": "https://oxlook.com/product/off-white-performance-tracksuit/",
+    "inStock": true
   },
   {
-    "id": 7,
-    "name": "Scented Candle",
-    "slug": "scented-candle",
-    "description": "A soy wax candle with calming lavender scent.",
-    "category": "Home",
-    "images": ["/images/scented-candle.jpg"]
+    "id": 205,
+    "name": "\"Green Performance Tracksuit\"",
+    "slug": "green-performance-tracksuit",
+    "description": "This Green Tracksuit offers a sleek and stylish design, perfect for any athletic activity or casual wear. Made with high quality materials, it provides both comfort and durability. With its breathable fabric and flexible fit, it allows for optimal performance while maintaining a professional look. Upgrade your wardrobe with this must-have piece.",
+    "shortDescription": "Made with high quality materials, it provides both comfort and durability.",
+    "category": "Kids",
+    "categories": [
+      "Kids"
+    ],
+    "tags": [
+      "Tracksuit"
+    ],
+    "images": [
+      "/assets/oxlook/green-performance-tracksuit-01.jpg",
+      "/assets/oxlook/green-performance-tracksuit-02.jpg",
+      "/assets/oxlook/green-performance-tracksuit-03.jpg",
+      "/assets/oxlook/green-performance-tracksuit-04.jpg",
+      "/assets/oxlook/green-performance-tracksuit-05.jpg"
+    ],
+    "sizes": [
+      "12 to 18 Months",
+      "1 to 2 Years",
+      "2 to 3 Years",
+      "3 to 4 Years",
+      "4 to 5 Years",
+      "5 to 6 Years",
+      "7 to 8 Years",
+      "9 to 10 Years",
+      "11 to 12 Years"
+    ],
+    "attributes": [
+      {
+        "name": "Size",
+        "values": [
+          "12 to 18 Months",
+          "1 to 2 Years",
+          "2 to 3 Years",
+          "3 to 4 Years",
+          "4 to 5 Years",
+          "5 to 6 Years",
+          "7 to 8 Years",
+          "9 to 10 Years",
+          "11 to 12 Years"
+        ]
+      }
+    ],
+    "prices": {
+      "currency": "PKR",
+      "price": 2499,
+      "regularPrice": 3499,
+      "salePrice": 2499
+    },
+    "sourceUrl": "https://oxlook.com/product/green-performance-tracksuit/",
+    "inStock": true
   },
   {
-    "id": 8,
-    "name": "Notebook Set",
-    "slug": "notebook-set",
-    "description": "A set of premium notebooks in various sizes.",
-    "category": "Basics",
-    "images": ["/images/notebook-set.jpg"]
+    "id": 201,
+    "name": "Black Sleeveless Jacket - Timeless",
+    "slug": "elevate-your-style-with-the-black-sleeveless-jacket-timeless-versatile",
+    "description": "Introducing our Black Jacket Sleevelss - a sleek and versatile addition to your wardrobe. Made with high-quality materials, this jacket offers a comfortable and stylish fit. With its timeless design and durable construction, it's the perfect choice for any occasion. Upgrade your style game with our Black Jacket Sleevless.",
+    "shortDescription": "Introducing our Black Jacket Sleevelss - a sleek and versatile addition to your wardrobe. Made with high-quality materials, this jacket offers a comfortable and stylish fit.",
+    "category": "Men",
+    "categories": [
+      "Men"
+    ],
+    "tags": [
+      "Sleevless Jacket"
+    ],
+    "images": [
+      "/assets/oxlook/elevate-your-style-with-the-black-sleeveless-jacket-timeless-versatile-01.jpg",
+      "/assets/oxlook/elevate-your-style-with-the-black-sleeveless-jacket-timeless-versatile-02.jpg",
+      "/assets/oxlook/elevate-your-style-with-the-black-sleeveless-jacket-timeless-versatile-03.jpg"
+    ],
+    "sizes": [
+      "Large",
+      "Medium",
+      "Small"
+    ],
+    "attributes": [
+      {
+        "name": "Size",
+        "values": [
+          "Large",
+          "Medium",
+          "Small"
+        ]
+      }
+    ],
+    "prices": {
+      "currency": "PKR",
+      "price": 2999,
+      "regularPrice": 4500,
+      "salePrice": 2999
+    },
+    "sourceUrl": "https://oxlook.com/product/elevate-your-style-with-the-black-sleeveless-jacket-timeless-versatile/",
+    "inStock": true
   }
 ]

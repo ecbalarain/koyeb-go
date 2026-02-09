@@ -35,7 +35,7 @@
 
       <button id="cartBtn" class="relative rounded-xl border border-zinc-200 bg-white p-2 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-900/20" type="button" aria-label="Open cart">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.6 12.3a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6l1.7-8.7H6.2"/></svg>
-        <span id="cartCount" class="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-zinc-900 text-xs font-semibold text-white">2</span>
+        <span id="cartCount" class="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-zinc-900 text-xs font-semibold text-white hidden">0</span>
       </button>
 
       <button id="menuBtn" class="rounded-xl border border-zinc-200 bg-white p-2 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-900/20 sm:hidden" type="button" aria-label="Open menu">
@@ -243,15 +243,15 @@
   <!-- Product detail overlay -->
   <div id="productOverlay" class="fixed inset-0 z-40 hidden">
     <div class="absolute inset-0 bg-zinc-900/30" data-close></div>
-    <div class="absolute inset-4 top-16 md:inset-8 md:top-20 bg-white rounded-3xl shadow-2xl overflow-hidden">
-      <div class="flex items-center justify-between border-b border-zinc-200 px-4 py-3 md:px-6">
+    <div class="absolute inset-2 top-14 bottom-2 md:inset-8 md:top-20 bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+      <div class="flex items-center justify-between border-b border-zinc-200 px-4 py-3 md:px-6 shrink-0">
         <p class="text-sm font-semibold">Product Details</p>
         <button class="rounded-xl p-2 hover:bg-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-900/20" data-close aria-label="Close">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
         </button>
       </div>
 
-      <div id="productDetail" class="flex-1 overflow-auto p-4 md:p-6">
+      <div id="productDetail" class="flex-1 overflow-y-auto overscroll-contain p-4 md:p-6 -webkit-overflow-scrolling-touch">
         <!-- Product details injected by JS -->
       </div>
     </div>
@@ -336,11 +336,16 @@
     /* Tailwind-friendly utility class for chips */
     .chip { @apply rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-700 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-4 focus:ring-zinc-900/10; }
     .chip.is-active { @apply border-zinc-900/20 bg-zinc-900 text-white; }
+    /* Variant selector selected state */
+    .size-option.selected, .color-option.selected { @apply border-zinc-900 bg-zinc-900 text-white; }
+    /* iOS momentum scrolling */
+    #productDetail { -webkit-overflow-scrolling: touch; }
   </style>
 
   <script>
     // --- State ---
     let products = [];
+    let allVariants = []; // Cached list of all variants from all products
     const state = {
       chip: 'All',
       q: '',
@@ -408,17 +413,25 @@
       toastTimer = setTimeout(() => el.classList.add('hidden'), 1600);
     }
 
+    function getCartCount() {
+      let count = 0;
+      for (const qty of state.cart.values()) {
+        count += qty;
+      }
+      return count;
+    }
+
+    function updateCartBadge(count) {
+      const cartCountEl = $('#cartCount');
+      if (!cartCountEl) return;
+      cartCountEl.textContent = String(count);
+      cartCountEl.classList.toggle('hidden', count === 0);
+    }
+
     // --- Loading state ---
     function setLoading(loading) {
       state.loading = loading;
-      const btn = $('#cartBtn');
-      if (loading) {
-        btn.disabled = true;
-        btn.innerHTML = '<div class="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>';
-      } else {
-        btn.disabled = false;
-        btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.6 12.3a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6l1.7-8.7H6.2"/></svg>';
-      }
+      // Don't modify cart button innerHTML - it destroys the badge span
     }
 
     // --- Load products ---
@@ -427,6 +440,7 @@
         setLoading(true);
         const data = await apiRequest('/products.json');
         products = data;
+        await loadAllVariants();
         await renderGrid();
       } catch (error) {
         console.error('Failed to load products:', error);
@@ -447,13 +461,37 @@
       }
     }
 
+    async function loadAllVariants() {
+      try {
+        const variantPromises = products.map(async (product) => {
+          try {
+            const variants = await apiRequest(`/api/products/${product.slug}/variants`);
+            const tagged = (variants || []).map((variant) => ({
+              ...variant,
+              product_slug: product.slug
+            }));
+            state.variantCache.set(product.slug, tagged);
+            return tagged;
+          } catch {
+            return [];
+          }
+        });
+        allVariants = (await Promise.all(variantPromises)).flat();
+      } catch (error) {
+        console.error('Failed to load variants:', error);
+        allVariants = [];
+      }
+    }
+
     // --- Render product cards ---
     function productCard(p) {
       const price = p.minPrice ? `$${p.minPrice}` : 'Price TBD';
+      const images = Array.isArray(p.images) ? p.images : (typeof p.images === 'string' ? JSON.parse(p.images) : []);
+      const imageUrl = images.length > 0 ? images[0] : '';
       return `
         <article class="group rounded-3xl border border-zinc-200 bg-white p-3 shadow-sm transition hover:shadow-md cursor-pointer" onclick="showProductDetail(${p.id})">
           <div class="aspect-[4/3] overflow-hidden rounded-2xl bg-zinc-100">
-            <div class="h-full w-full bg-gradient-to-b from-zinc-100 to-zinc-50"></div>
+            ${imageUrl ? `<img src="${imageUrl}" alt="${p.name}" class="h-full w-full object-cover" />` : `<div class="h-full w-full bg-gradient-to-b from-zinc-100 to-zinc-50"></div>`}
           </div>
           <div class="mt-3 flex items-start justify-between gap-2">
             <div>
@@ -534,7 +572,18 @@
       try {
         setLoading(true);
         const variants = await apiRequest(`/api/products/${product.slug}/variants`);
-        state.currentProduct = { ...product, variants };
+        
+        // Tag variants with product_slug and add to allVariants cache
+        const taggedVariants = variants.map(v => ({ ...v, product_slug: product.slug }));
+        state.currentProduct = { ...product, variants: taggedVariants };
+        
+        // Update allVariants cache by removing old variants for this product and adding new ones
+        allVariants = allVariants.filter(v => v.product_slug !== product.slug);
+        allVariants.push(...taggedVariants);
+        
+        // Also update variantCache
+        state.variantCache.set(product.slug, taggedVariants);
+        
         renderProductDetail();
         openOverlay($('#productOverlay'));
       } catch (error) {
@@ -553,12 +602,14 @@
       const price = selectedVariant ? `$${(selectedVariant.price / 100).toFixed(2)}` : 'Select options';
       const stockStatus = getStockStatus(selectedVariant);
       const canAddToCart = selectedVariant && selectedVariant.stock > 0 && selectedVariant.active;
+      const images = Array.isArray(product.images) ? product.images : (typeof product.images === 'string' ? JSON.parse(product.images) : []);
+      const imageUrl = images.length > 0 ? images[0] : '';
 
       $('#productDetail').innerHTML = `
         <div class="grid gap-6 md:grid-cols-2">
           <!-- Image -->
           <div class="aspect-square overflow-hidden rounded-3xl bg-zinc-100">
-            <div class="h-full w-full bg-gradient-to-b from-zinc-100 to-zinc-50"></div>
+            ${imageUrl ? `<img src="${imageUrl}" alt="${product.name}" class="h-full w-full object-cover" />` : `<div class="h-full w-full bg-gradient-to-b from-zinc-100 to-zinc-50"></div>`}
           </div>
 
           <!-- Details -->
@@ -724,22 +775,9 @@
 
       // Get variant details for pricing
       for (const [variantId, qty] of cartItems) {
-        // Find the variant - this is a simplified approach
-        // In a real app, you'd cache this data
-        try {
-          // We need to find which product this variant belongs to
-          // For now, we'll make a rough estimate
-          const productId = Math.floor(variantId / 10);
-          const product = products.find(p => p.id === productId);
-          if (product) {
-            const variants = await apiRequest(`/api/products/${product.slug}/variants`);
-            const variant = variants.find(v => v.id === variantId);
-            if (variant) {
-              subtotal += (variant.price / 100) * qty;
-            }
-          }
-        } catch (error) {
-          console.error('Error calculating price:', error);
+        const variant = allVariants.find(v => v.id === variantId);
+        if (variant) {
+          subtotal += (variant.price / 100) * qty;
         }
       }
 
@@ -755,23 +793,19 @@
 
         // Build order items from cart
         const items = [];
+        if (allVariants.length === 0) {
+          await loadAllVariants();
+        }
+
         for (const [variantId, qty] of state.cart.entries()) {
-          // Find product and variant details
-          const productId = Math.floor(variantId / 10);
-          const product = products.find(p => p.id === productId);
-          if (product) {
-            try {
-              const variants = await apiRequest(`/api/products/${product.slug}/variants`);
-              const variant = variants.find(v => v.id === variantId);
-              if (variant) {
-                items.push({
-                  variant_id: variantId,
-                  quantity: qty
-                });
-              }
-            } catch (error) {
-              console.error('Error getting variant details:', error);
-            }
+          const numId = Number(variantId);
+          const numQty = parseInt(qty) || 1;
+          const variant = allVariants.find(v => Number(v.id) === numId);
+          if (variant) {
+            items.push({
+              variant_id: numId,
+              qty: numQty
+            });
           }
         }
 
@@ -814,7 +848,10 @@
 
     function addSelectedVariantToCart() {
       const variant = getSelectedVariant();
-      if (!variant) return;
+      if (!variant) {
+        toast('Please select size and color');
+        return;
+      }
 
       addToCart(variant.id);
       closeOverlay($('#productOverlay'));
@@ -822,13 +859,26 @@
 
     // --- Cart ---
     function addToCart(variantId) {
-      state.cart.set(variantId, (state.cart.get(variantId) || 0) + 1);
+      // Ensure variantId is a number
+      variantId = Number(variantId);
+      const currentQty = state.cart.get(variantId) || 0;
+      state.cart.set(variantId, currentQty + 1);
       saveCart();
+      updateCartBadge(getCartCount());
       renderCart();
       toast('Added to cart');
     }
 
+    function removeFromCart(variantId) {
+      variantId = Number(variantId);
+      state.cart.delete(variantId);
+      saveCart();
+      updateCartBadge(getCartCount());
+      renderCart();
+    }
+
     function decItem(variantId) {
+      variantId = Number(variantId);
       const qty = state.cart.get(variantId) || 0;
       if (qty <= 1) {
         state.cart.delete(variantId);
@@ -836,18 +886,22 @@
         state.cart.set(variantId, qty - 1);
       }
       saveCart();
+      updateCartBadge(getCartCount());
       renderCart();
     }
 
     function incItem(variantId) {
+      variantId = Number(variantId);
       state.cart.set(variantId, (state.cart.get(variantId) || 0) + 1);
       saveCart();
+      updateCartBadge(getCartCount());
       renderCart();
     }
 
     function clearCart() {
       state.cart.clear();
       saveCart();
+      updateCartBadge(0);
       renderCart();
       toast('Cart cleared');
     }
@@ -865,11 +919,17 @@
       try {
         const cartData = localStorage.getItem('cart');
         if (cartData) {
-          state.cart = new Map(JSON.parse(cartData));
+          const parsed = JSON.parse(cartData);
+          // Ensure keys are numbers and values are valid integers
+          state.cart = new Map(
+            parsed.map(([k, v]) => [Number(k), Math.max(1, parseInt(v) || 1)])
+          );
         }
+        updateCartBadge(getCartCount());
       } catch (error) {
         console.error('Failed to load cart:', error);
         state.cart = new Map();
+        updateCartBadge(0);
       }
     }
 
@@ -886,8 +946,7 @@
       }
 
       if (cartItems.length === 0) {
-        cartCountEl.textContent = '0';
-        cartCountEl.classList.add('hidden');
+        updateCartBadge(0);
         cartSubtotalEl.textContent = '$0';
         cartItemsEl.innerHTML = `
           <div class="rounded-3xl border border-zinc-200 bg-white p-6 text-center text-sm text-zinc-600 shadow-sm">
@@ -899,42 +958,32 @@
 
       try {
         setLoading(true);
-        // Get all unique product IDs from cart variants
-        const variantIds = cartItems.map(([variantId]) => variantId);
-        const productIds = [...new Set(variantIds.map(id => {
-          // We need to find the product for each variant
-          // For now, we'll use a simple approach - this should be improved
-          return Math.floor(id / 10); // Rough approximation
-        }))];
-
-        // Load variants for all products in cart
-        const variantPromises = productIds.map(async (productId) => {
-          const product = products.find(p => p.id === productId);
-          if (!product) return [];
-          try {
-            return await apiRequest(`/api/products/${product.slug}/variants`);
-          } catch {
-            return [];
-          }
-        });
-
-        const allVariants = (await Promise.all(variantPromises)).flat();
+        // Use cached variants if available
+        if (allVariants.length === 0) {
+          console.log('allVariants cache empty, loading all variants...');
+          await loadAllVariants();
+          console.log('Loaded', allVariants.length, 'variants');
+        }
 
         const items = cartItems.map(([variantId, qty]) => {
-          const variant = allVariants.find(v => v.id === variantId);
-          const product = products.find(p => p.id === variant?.product_id);
+          const numId = Number(variantId);
+          const numQty = parseInt(qty) || 1;
+          const variant = allVariants.find(v => Number(v.id) === numId);
+          const product = variant ? (products.find(p => p.slug === variant.product_slug) || products.find(p => p.id === variant.product_id)) : null;
+          const images = product ? (Array.isArray(product.images) ? product.images : (typeof product.images === 'string' ? JSON.parse(product.images) : [])) : [];
+          const imageUrl = images.length > 0 ? images[0] : '';
           return {
             variant,
             product,
-            qty,
-            variantLabel: variant ? `${variant.size} / ${variant.color}` : 'Unknown variant',
+            qty: numQty,
+            imageUrl,
+            variantLabel: variant ? `${variant.size}${variant.color ? ' / ' + variant.color : ''}` : 'Unknown variant',
             price: variant ? variant.price / 100 : 0
           };
         }).filter(item => item.variant && item.product);
-
+        
         const count = items.reduce((sum, x) => sum + x.qty, 0);
-        $('#cartCount').textContent = String(count);
-        $('#cartCount').classList.toggle('hidden', count === 0);
+        updateCartBadge(count);
 
         const subtotal = items.reduce((sum, x) => sum + x.price * x.qty, 0);
         $('#cartSubtotal').textContent = `$${subtotal.toFixed(2)}`;
@@ -942,15 +991,24 @@
         $('#cartItems').innerHTML = items.map(x => `
           <div class="rounded-3xl border border-zinc-200 bg-white p-3 shadow-sm">
             <div class="flex gap-3">
-              <div class="h-16 w-16 shrink-0 rounded-2xl bg-zinc-100"></div>
+              <div class="h-16 w-16 shrink-0 rounded-2xl bg-zinc-100 overflow-hidden">
+                ${x.imageUrl ? `<img src="${x.imageUrl}" alt="${x.product.name}" class="h-full w-full object-cover" />` : ''}
+              </div>
               <div class="min-w-0 flex-1">
-                <p class="truncate text-sm font-medium">${x.product.name}</p>
-                <p class="mt-1 text-xs text-zinc-500">$${x.price.toFixed(2)} • ${x.variantLabel}</p>
-                <div class="mt-3 flex items-center justify-between">
-                  <div class="inline-flex items-center gap-2 rounded-2xl border border-zinc-200 bg-zinc-50 p-1">
-                    <button class="rounded-xl px-2 py-1 text-sm hover:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/10" onclick="decItem(${x.variant.id})" aria-label="Decrease">−</button>
-                    <span class="w-6 text-center text-sm">${x.qty}</span>
-                    <button class="rounded-xl px-2 py-1 text-sm hover:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/10" onclick="incItem(${x.variant.id})" aria-label="Increase">+</button>
+                <div class="flex items-start justify-between">
+                  <div>
+                    <p class="truncate text-sm font-medium">${x.product.name}</p>
+                    <p class="mt-0.5 text-xs text-zinc-500">${x.variantLabel}</p>
+                  </div>
+                  <button class="ml-2 shrink-0 rounded-lg p-1 text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 focus:outline-none" onclick="removeFromCart(${x.variant.id})" aria-label="Remove">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
+                  </button>
+                </div>
+                <div class="mt-2 flex items-center justify-between">
+                  <div class="inline-flex items-center gap-1 rounded-2xl border border-zinc-200 bg-zinc-50 p-0.5">
+                    <button class="rounded-xl px-2.5 py-1 text-sm font-medium hover:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/10" onclick="decItem(${x.variant.id})" aria-label="Decrease">−</button>
+                    <span class="w-7 text-center text-sm font-medium">${x.qty}</span>
+                    <button class="rounded-xl px-2.5 py-1 text-sm font-medium hover:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/10" onclick="incItem(${x.variant.id})" aria-label="Increase">+</button>
                   </div>
                   <p class="text-sm font-semibold">$${(x.price * x.qty).toFixed(2)}</p>
                 </div>
@@ -978,9 +1036,37 @@
       document.body.classList.remove('overflow-hidden');
     }
 
+    function closeTopOverlay() {
+      const overlays = [
+        $('#confirmationOverlay'),
+        $('#checkoutOverlay'),
+        $('#productOverlay'),
+        $('#cartOverlay'),
+        $('#menuOverlay')
+      ];
+
+      for (const overlay of overlays) {
+        if (overlay && !overlay.classList.contains('hidden')) {
+          closeOverlay(overlay);
+          return true;
+        }
+      }
+
+      return false;
+    }
+
     function wireOverlay(overlay) {
+      // Close on backdrop click (direct click on backdrop, not bubbled from inside panel)
       overlay.addEventListener('click', (e) => {
-        if (e.target.matches('[data-close]')) closeOverlay(overlay);
+        // Close button clicked
+        if (e.target.closest('button[data-close]')) {
+          closeOverlay(overlay);
+          return;
+        }
+        // Backdrop clicked (the overlay div or the backdrop div itself, not the panel)
+        if (e.target === overlay || e.target.hasAttribute('data-close')) {
+          closeOverlay(overlay);
+        }
       });
       overlay.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') closeOverlay(overlay);
@@ -988,7 +1074,7 @@
     }
 
     // --- Init ---
-    function init() {
+    async function init() {
       $('#year').textContent = String(new Date().getFullYear());
 
       // Load cart from localStorage
@@ -1024,7 +1110,14 @@
       wireOverlay(confirmationOverlay);
 
       $('#menuBtn').addEventListener('click', () => openOverlay(menuOverlay));
-      $('#cartBtn').addEventListener('click', () => openOverlay(cartOverlay));
+      $('#cartBtn').addEventListener('click', async () => {
+        if (!cartOverlay.classList.contains('hidden')) {
+          closeOverlay(cartOverlay);
+          return;
+        }
+        await renderCart();
+        openOverlay(cartOverlay);
+      });
 
       // Checkout form
       $('#checkoutForm').addEventListener('submit', async (e) => {
@@ -1035,6 +1128,12 @@
 
       // Keyboard shortcut for search (desktop)
       document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          if (closeTopOverlay()) {
+            e.preventDefault();
+            return;
+          }
+        }
         if (e.key === '/' && !e.metaKey && !e.ctrlKey && !e.altKey) {
           const active = document.activeElement;
           const isTyping = active && ['INPUT','TEXTAREA'].includes(active.tagName);
@@ -1046,8 +1145,8 @@
       });
 
       // Load products and render
-      loadProducts();
-      renderCart();
+      await loadProducts();
+      await renderCart();
     }
 
     init();
