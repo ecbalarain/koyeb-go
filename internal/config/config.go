@@ -16,10 +16,7 @@ type Config struct {
 	JWTSecret   string
 	JWTExpiry   int // JWT token expiry in hours
 	Environment string
-	EmailHost   string
-	EmailPort   int
-	EmailUser   string
-	EmailPass   string
+	BrevoAPIKey string
 	EmailFrom   string
 }
 
@@ -33,11 +30,6 @@ func Load() *Config {
 		jwtExpiry = 24
 	}
 
-	emailPort, _ := strconv.Atoi(getEnv("EMAIL_PORT", "465"))
-	if emailPort <= 0 {
-		emailPort = 465
-	}
-
 	return &Config{
 		Port:        getEnv("PORT", "8080"),
 		DatabaseURL: getEnv("DATABASE_URL", ""),
@@ -46,11 +38,8 @@ func Load() *Config {
 		JWTSecret:   getEnv("JWT_SECRET", ""),
 		JWTExpiry:   jwtExpiry,
 		Environment: getEnv("ENVIRONMENT", "development"),
-		EmailHost:   getEnv("EMAIL_HOST", "smtp-relay.brevo.com"),
-		EmailPort:   emailPort,
-		EmailUser:   getEnv("EMAIL_HOST_USER", ""),
-		EmailPass:   getEnv("EMAIL_HOST_PASSWORD", ""),
-		EmailFrom:   getEnv("DEFAULT_FROM_EMAIL", "Bhomanshah <store@bhomanshah.com>"),
+		BrevoAPIKey: getEnv("BREVO_API_KEY", ""),
+		EmailFrom:   getEnv("DEFAULT_FROM_EMAIL", "store@bhomanshah.com"),
 	}
 }
 

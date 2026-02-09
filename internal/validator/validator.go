@@ -76,3 +76,30 @@ func ValidOrderStatus(status string) bool {
 	}
 	return validStatuses[status]
 }
+
+// IsValidEmail performs basic email validation.
+func IsValidEmail(email string) bool {
+	if email == "" {
+		return false
+	}
+	
+	// Basic email validation: must contain @ and . after @
+	parts := strings.Split(email, "@")
+	if len(parts) != 2 {
+		return false
+	}
+	
+	local := parts[0]
+	domain := parts[1]
+	
+	if local == "" || domain == "" {
+		return false
+	}
+	
+	// Domain must contain a dot
+	if !strings.Contains(domain, ".") {
+		return false
+	}
+	
+	return true
+}

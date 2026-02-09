@@ -23,7 +23,7 @@ func main() {
 	defer db.Close()
 
 	// Initialize handlers
-	h := handlers.NewHandler(db, cfg.AdminSecret, cfg.JWTSecret, cfg.JWTExpiry, cfg.EmailHost, cfg.EmailPort, cfg.EmailUser, cfg.EmailPass, cfg.EmailFrom)
+	h := handlers.NewHandler(db, cfg.AdminSecret, cfg.JWTSecret, cfg.JWTExpiry, cfg.BrevoAPIKey, cfg.EmailFrom)
 
 	app := fiber.New(fiber.Config{
 		AppName:        "OXLOOK API",
@@ -69,6 +69,9 @@ func main() {
 	// POST /api/orders — create COD order (with strict rate limiting)
 	// 5 orders per minute per IP to prevent abuse
 	api.Post("/orders", middleware.StrictRateLimit(5, 1*time.Minute), h.CreateOrder)
+
+	// POST /api/test-email — send test order confirmation email
+	api.Post("/test-email", h.SendTestEmail)
 
 	// Static admin pages (before admin group to avoid auth middleware)
 	app.Get("/admin/login", func(c fiber.Ctx) error {

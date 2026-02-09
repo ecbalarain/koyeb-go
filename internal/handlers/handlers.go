@@ -28,7 +28,7 @@ type Handler struct {
 }
 
 // NewHandler creates a new handler instance.
-func NewHandler(db *sql.DB, adminSecret, jwtSecret string, jwtExpiry int, emailHost string, emailPort int, emailUser, emailPass, emailFrom string) *Handler {
+func NewHandler(db *sql.DB, adminSecret, jwtSecret string, jwtExpiry int, apiKey, from string) *Handler {
 	return &Handler{
 		productRepo:  repository.NewProductRepository(db),
 		variantRepo:  repository.NewVariantRepository(db),
@@ -37,7 +37,7 @@ func NewHandler(db *sql.DB, adminSecret, jwtSecret string, jwtExpiry int, emailH
 		adminSecret:  adminSecret,
 		jwtSecret:    jwtSecret,
 		jwtExpiry:    jwtExpiry,
-		emailService: services.NewEmailService(emailHost, emailPort, emailUser, emailPass, emailFrom),
+		emailService: services.NewEmailService(apiKey, from),
 	}
 }
 
@@ -774,4 +774,45 @@ func (h *Handler) AdminPurgeCache(c fiber.Ctx) error {
 			"error": "Invalid cache type. Use 'all' or 'variants'",
 		})
 	}
+}
+
+// SendTestEmail sends a test order confirmation email to a specified address.
+// POST /api/test-email
+func (h *Handler) SendTestEmail(c fiber.Ctx) error {
+	var req struct {
+		Email string `json:"email"`
+	}
+
+	if err := c.Bind().Body(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid request body",
+		})
+	}
+
+	if req.Email == "" {
+		req.Email = "miqbal@sis.edu.eg" // Default test email
+	}
+
+	// Validate email format
+	if !validator.IsValidEmail(req.Email) {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid email format",
+		})
+	}
+
+	// Send test email
+	err := h.emailService.SendOrderConfirmation(req.Email, "Test Customer", 12345, 1199)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to send test email",
+			"details": err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Test email sent successfully",
+		"email":   req.Email,
+		"order_id": 12345,
+		"total": 1199,
+	})
 }
