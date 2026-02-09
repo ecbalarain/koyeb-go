@@ -38,7 +38,7 @@ COPY --from=build /app/migrations ./migrations
 COPY --from=build /app/cloudflare-pages-frontend ./cloudflare-pages-frontend
 
 # Copy startup script
-COPY --from=build /app/docker-entrypoint.sh .
+COPY docker-entrypoint.sh .
 RUN chmod +x docker-entrypoint.sh
 
 # Expose port (Koyeb will override this with PORT env var)
