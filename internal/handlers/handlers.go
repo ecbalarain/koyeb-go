@@ -28,7 +28,7 @@ type Handler struct {
 }
 
 // NewHandler creates a new handler instance.
-func NewHandler(db *sql.DB, adminSecret, jwtSecret string, jwtExpiry int, apiKey, from string) *Handler {
+func NewHandler(db *sql.DB, adminSecret, jwtSecret string, jwtExpiry int, apiKey, from, orderStatusURLBase string) *Handler {
 	return &Handler{
 		productRepo:  repository.NewProductRepository(db),
 		variantRepo:  repository.NewVariantRepository(db),
@@ -37,7 +37,7 @@ func NewHandler(db *sql.DB, adminSecret, jwtSecret string, jwtExpiry int, apiKey
 		adminSecret:  adminSecret,
 		jwtSecret:    jwtSecret,
 		jwtExpiry:    jwtExpiry,
-		emailService: services.NewEmailService(apiKey, from),
+		emailService: services.NewEmailService(apiKey, from, orderStatusURLBase),
 	}
 }
 
@@ -287,6 +287,54 @@ func (h *Handler) CreateOrder(c fiber.Ctx) error {
 		"total":    order.Total,
 		"status":   order.Status,
 		"message":  "Order created successfully",
+	})
+}
+
+// GetOrderStatus returns a public order status view (email verification required).
+// GET /api/orders/:id/status?email=customer@example.com
+func (h *Handler) GetOrderStatus(c fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid order ID",
+		})
+	}
+
+	email := strings.TrimSpace(c.Query("email"))
+	if email == "" || !validator.IsValidEmail(email) {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Valid email is required",
+		})
+	}
+
+	order, err := h.orderRepo.GetByID(int64(id))
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to fetch order",
+		})
+	}
+	if order == nil || !strings.EqualFold(order.CustomerEmail, email) {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "Order not found",
+		})
+	}
+
+	items, err := h.orderRepo.GetItemsByOrderID(int64(id))
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to fetch order items",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"order": fiber.Map{
+			"id":         order.ID,
+			"status":     order.Status,
+			"total":      order.Total,
+			"created_at": order.CreatedAt,
+		},
+		"items": items,
 	})
 }
 
@@ -801,7 +849,11 @@ func (h *Handler) SendTestEmail(c fiber.Ctx) error {
 	}
 
 	// Send test email
-	err := h.emailService.SendOrderConfirmation(req.Email, "Test Customer", 12345, 1199)
+	items := []models.OrderItem{
+		{ProductName: "Test Tee", VariantLabel: "Black / M", PriceAtPurchase: 1199, Qty: 1},
+		{ProductName: "Test Cap", VariantLabel: "Default", PriceAtPurchase: 899, Qty: 2},
+	}
+	err := h.emailService.SendOrderConfirmation(req.Email, "Test Customer", 12345, 1199, items)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to send test email",

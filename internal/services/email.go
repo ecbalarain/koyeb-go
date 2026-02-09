@@ -4,42 +4,99 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"html"
 	"net/http"
+	"strings"
+
+	"github.com/koyeb/example-golang/internal/models"
 )
 
 // EmailService handles sending emails via Brevo API.
 type EmailService struct {
 	apiKey string
 	from   string
+	orderStatusBase string
 }
 
 // NewEmailService creates a new email service.
-func NewEmailService(apiKey, from string) *EmailService {
+func NewEmailService(apiKey, from, orderStatusBase string) *EmailService {
 	return &EmailService{
 		apiKey: apiKey,
 		from:   from,
+		orderStatusBase: orderStatusBase,
 	}
 }
 
 // SendOrderConfirmation sends an order confirmation email to the customer.
-func (e *EmailService) SendOrderConfirmation(to, customerName string, orderID int64, total int64) error {
+func (e *EmailService) SendOrderConfirmation(to, customerName string, orderID int64, total int64, items []models.OrderItem) error {
 	if e.apiKey == "" {
 		// Skip sending if API key not configured
 		return nil
 	}
 
 	subject := "Order Confirmation - Bhomanshah"
-	htmlContent := fmt.Sprintf(`<html><head></head><body>
+	statusURL := e.orderStatusURL(orderID)
+	itemsHTML := e.renderOrderItems(items)
+	statusLinkHTML := ""
+	if statusURL != "" {
+		statusLinkHTML = fmt.Sprintf(`<p><a href="%s" style="color:#18181b;text-decoration:underline;">View order status</a></p>`, statusURL)
+	}
+
+	htmlContent := fmt.Sprintf(`<html><head></head><body style="font-family:Arial,Helvetica,sans-serif;color:#111827;">
 <p>Dear %s,</p>
 <p>Thank you for your order!</p>
-<p>Order ID: %d<br>
-Total: PKR %d</p>
+<p><strong>Order ID:</strong> %d<br>
+<strong>Total:</strong> PKR %d</p>
+%s
+%s
 <p>Your order has been received and is being processed. You will receive updates on your order status.</p>
 <p>Best regards,<br>
 Bhomanshah Team</p>
-</body></html>`, customerName, orderID, total)
+</body></html>`, html.EscapeString(customerName), orderID, total, itemsHTML, statusLinkHTML)
 
 	return e.sendEmail(to, subject, htmlContent)
+}
+
+func (e *EmailService) orderStatusURL(orderID int64) string {
+	base := strings.TrimSpace(e.orderStatusBase)
+	if base == "" {
+		return ""
+	}
+	base = strings.TrimRight(base, "/")
+	return fmt.Sprintf("%s/%d", base, orderID)
+}
+
+func (e *EmailService) renderOrderItems(items []models.OrderItem) string {
+	if len(items) == 0 {
+		return ""
+	}
+
+	var sb strings.Builder
+	sb.WriteString(`<table style="width:100%;border-collapse:collapse;margin:16px 0;">`)
+	sb.WriteString(`<thead><tr>`)
+	sb.WriteString(`<th align="left" style="border-bottom:1px solid #e5e7eb;padding:6px 0;">Item</th>`)
+	sb.WriteString(`<th align="left" style="border-bottom:1px solid #e5e7eb;padding:6px 0;">Variant</th>`)
+	sb.WriteString(`<th align="right" style="border-bottom:1px solid #e5e7eb;padding:6px 0;">Qty</th>`)
+	sb.WriteString(`<th align="right" style="border-bottom:1px solid #e5e7eb;padding:6px 0;">Line total</th>`)
+	sb.WriteString(`</tr></thead><tbody>`)
+
+	for _, item := range items {
+		lineTotal := item.PriceAtPurchase * int64(item.Qty)
+		name := html.EscapeString(item.ProductName)
+		variant := html.EscapeString(item.VariantLabel)
+		if variant == "" {
+			variant = "-"
+		}
+		sb.WriteString(`<tr>`) 
+		sb.WriteString(fmt.Sprintf(`<td style="padding:6px 0;">%s</td>`, name))
+		sb.WriteString(fmt.Sprintf(`<td style="padding:6px 0;">%s</td>`, variant))
+		sb.WriteString(fmt.Sprintf(`<td align="right" style="padding:6px 0;">%d</td>`, item.Qty))
+		sb.WriteString(fmt.Sprintf(`<td align="right" style="padding:6px 0;">PKR %d</td>`, lineTotal))
+		sb.WriteString(`</tr>`)
+	}
+
+	sb.WriteString(`</tbody></table>`)
+	return sb.String()
 }
 
 // sendEmail sends an email using Brevo API.

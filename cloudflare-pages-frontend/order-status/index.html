@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order Status - Bhomanshah</title>
+  <meta name="description" content="Check your order status and items." />
+  <link rel="preconnect" href="https://cdn.tailwindcss.com" />
+  <link rel="dns-prefetch" href="https://api.bhomanshah.com" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-zinc-50 text-zinc-900">
+  <main class="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
+    <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-8">
+      <div class="flex items-center justify-between">
+        <h1 class="text-xl font-semibold tracking-tight sm:text-2xl">Order Status</h1>
+        <a class="text-sm text-zinc-600 hover:text-zinc-900" href="/">Back to store</a>
+      </div>
+      <p class="mt-2 text-sm text-zinc-600">Enter your email to view your order status and items.</p>
+
+      <form id="statusForm" class="mt-5 grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
+        <label class="block text-sm">
+          <span class="text-zinc-700">Order ID</span>
+          <input id="orderId" type="text" inputmode="numeric" class="mt-1 w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2.5 text-sm shadow-sm focus:border-zinc-300 focus:outline-none focus:ring-4 focus:ring-zinc-900/10" placeholder="e.g. 12345" required />
+        </label>
+        <label class="block text-sm">
+          <span class="text-zinc-700">Email</span>
+          <input id="email" type="email" class="mt-1 w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2.5 text-sm shadow-sm focus:border-zinc-300 focus:outline-none focus:ring-4 focus:ring-zinc-900/10" placeholder="you@email.com" required />
+        </label>
+        <button id="lookupBtn" type="submit" class="rounded-2xl bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-zinc-800 focus:outline-none focus:ring-4 focus:ring-zinc-900/20">Check</button>
+      </form>
+
+      <div id="statusError" class="mt-4 hidden rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"></div>
+
+      <div id="statusResult" class="mt-6 hidden">
+        <div class="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 text-sm">
+            <div>
+              <div class="text-zinc-500">Order</div>
+              <div id="resultOrderId" class="font-semibold">#000000</div>
+            </div>
+            <div>
+              <div class="text-zinc-500">Status</div>
+              <div id="resultStatus" class="font-semibold">new</div>
+            </div>
+            <div>
+              <div class="text-zinc-500">Total</div>
+              <div id="resultTotal" class="font-semibold">PKR 0</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <h2 class="text-sm font-semibold">Items</h2>
+          <div id="resultItems" class="mt-2 space-y-2"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const apiBase = 'https://api.bhomanshah.com';
+
+    function parseOrderIdFromPath() {
+      const path = window.location.pathname.replace(/\/$/, '');
+      const parts = path.split('/').filter(Boolean);
+      const last = parts[parts.length - 1];
+      if (last && /^\d+$/.test(last)) {
+        return last;
+      }
+      const params = new URLSearchParams(window.location.search);
+      const paramId = params.get('orderId');
+      return paramId && /^\d+$/.test(paramId) ? paramId : '';
+    }
+
+    function formatPKR(value) {
+      if (typeof value !== 'number') {
+        value = Number(value) || 0;
+      }
+      return `PKR ${value}`;
+    }
+
+    function setLoading(loading) {
+      const btn = document.getElementById('lookupBtn');
+      if (!btn) return;
+      btn.disabled = loading;
+      btn.textContent = loading ? 'Loading...' : 'Check';
+    }
+
+    async function fetchStatus(orderId, email) {
+      const url = `${apiBase}/api/orders/${orderId}/status?email=${encodeURIComponent(email)}`;
+      const res = await fetch(url, { headers: { 'Content-Type': 'application/json' } });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        const msg = data.error || 'Failed to load order status';
+        throw new Error(msg);
+      }
+      return res.json();
+    }
+
+    function renderItems(items) {
+      const container = document.getElementById('resultItems');
+      container.innerHTML = items.map(item => {
+        const lineTotal = (item.price_at_purchase || 0) * (item.qty || 0);
+        const label = item.variant_label || '-';
+        return `
+          <div class="rounded-2xl border border-zinc-200 bg-white p-3 text-sm">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <div class="font-medium">${item.product_name}</div>
+                <div class="text-xs text-zinc-500">${label}</div>
+              </div>
+              <div class="text-right">
+                <div class="text-xs text-zinc-500">Qty</div>
+                <div class="font-medium">${item.qty}</div>
+              </div>
+              <div class="text-right">
+                <div class="text-xs text-zinc-500">Line total</div>
+                <div class="font-medium">${formatPKR(lineTotal)}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    document.getElementById('statusForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const orderId = document.getElementById('orderId').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const errorEl = document.getElementById('statusError');
+      const resultEl = document.getElementById('statusResult');
+
+      errorEl.classList.add('hidden');
+      resultEl.classList.add('hidden');
+
+      if (!orderId || !email) {
+        errorEl.textContent = 'Please enter both order ID and email.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const data = await fetchStatus(orderId, email);
+        document.getElementById('resultOrderId').textContent = `#${data.order.id}`;
+        document.getElementById('resultStatus').textContent = data.order.status;
+        document.getElementById('resultTotal').textContent = formatPKR(data.order.total);
+        renderItems(data.items || []);
+        resultEl.classList.remove('hidden');
+      } catch (err) {
+        errorEl.textContent = err.message || 'Failed to load order status.';
+        errorEl.classList.remove('hidden');
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    const presetOrderId = parseOrderIdFromPath();
+    if (presetOrderId) {
+      document.getElementById('orderId').value = presetOrderId;
+    }
+  </script>
+</body>
+</html>

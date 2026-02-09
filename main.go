@@ -23,7 +23,7 @@ func main() {
 	defer db.Close()
 
 	// Initialize handlers
-	h := handlers.NewHandler(db, cfg.AdminSecret, cfg.JWTSecret, cfg.JWTExpiry, cfg.BrevoAPIKey, cfg.EmailFrom)
+	h := handlers.NewHandler(db, cfg.AdminSecret, cfg.JWTSecret, cfg.JWTExpiry, cfg.BrevoAPIKey, cfg.EmailFrom, cfg.OrderStatusURLBase)
 
 	app := fiber.New(fiber.Config{
 		AppName:        "OXLOOK API",
@@ -69,6 +69,9 @@ func main() {
 	// POST /api/orders — create COD order (with strict rate limiting)
 	// 5 orders per minute per IP to prevent abuse
 	api.Post("/orders", middleware.StrictRateLimit(5, 1*time.Minute), h.CreateOrder)
+
+	// GET /api/orders/:id/status — public order status lookup (email required)
+	api.Get("/orders/:id/status", h.GetOrderStatus)
 
 	// POST /api/test-email — send test order confirmation email
 	api.Post("/test-email", h.SendTestEmail)

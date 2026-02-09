@@ -27,12 +27,6 @@
       <div class="flex-1"></div>
 
       <!-- Actions -->
-      <button id="openSearch" class="hidden items-center gap-2 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-600 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-900/20 sm:flex" type="button">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-        <span>Search</span>
-        <span class="ml-2 rounded-lg bg-zinc-100 px-2 py-0.5 text-xs text-zinc-500">/</span>
-      </button>
-
       <button id="cartBtn" class="relative rounded-xl border border-zinc-200 bg-white p-2 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-900/20" type="button" aria-label="Open cart">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.6 12.3a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6l1.7-8.7H6.2"/></svg>
         <span id="cartCount" class="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-zinc-900 text-xs font-semibold text-white hidden">0</span>
@@ -43,85 +37,13 @@
       </button>
     </div>
 
-    <!-- Mobile search row -->
-    <div class="mx-auto max-w-6xl px-4 pb-3 sm:hidden">
-      <label class="relative block">
-        <span class="sr-only">Search products</span>
-        <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-zinc-400">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-        </span>
-        <input id="searchInputMobile" class="w-full rounded-2xl border border-zinc-200 bg-white py-2.5 pl-9 pr-3 text-sm shadow-sm placeholder:text-zinc-400 focus:border-zinc-300 focus:outline-none focus:ring-4 focus:ring-zinc-900/10" placeholder="Search products" />
-      </label>
-    </div>
+    
   </header>
 
   <!-- Main -->
   <main class="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
-    <!-- Hero -->
-    <section class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-8">
-      <div class="grid gap-6 sm:grid-cols-2 sm:items-center">
-        <div class="space-y-3">
-          <p class="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-xs text-zinc-600">
-            <span class="h-1.5 w-1.5 rounded-full bg-zinc-900"></span>
-            New arrivals
-          </p>
-          <h1 class="text-2xl font-semibold tracking-tight sm:text-4xl">Clean essentials for everyday use.</h1>
-          <p class="text-sm leading-relaxed text-zinc-600 sm:text-base">A minimal storefront UI with a mobile-first layout, soft shadows, and calm spacing.</p>
-          <div class="flex flex-wrap gap-2 pt-1">
-            <a href="#products" class="inline-flex items-center justify-center rounded-2xl bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-zinc-800 focus:outline-none focus:ring-4 focus:ring-zinc-900/20">Shop now</a>
-            <a href="#" class="inline-flex items-center justify-center rounded-2xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-800 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-4 focus:ring-zinc-900/10">View collections</a>
-          </div>
-          <dl class="grid grid-cols-3 gap-3 pt-4">
-            <div class="rounded-2xl border border-zinc-200 bg-zinc-50 p-3">
-              <dt class="text-xs text-zinc-500">Shipping</dt>
-              <dd class="mt-1 text-sm font-semibold">2–4 days</dd>
-            </div>
-            <div class="rounded-2xl border border-zinc-200 bg-zinc-50 p-3">
-              <dt class="text-xs text-zinc-500">Returns</dt>
-              <dd class="mt-1 text-sm font-semibold">30 days</dd>
-            </div>
-            <div class="rounded-2xl border border-zinc-200 bg-zinc-50 p-3">
-              <dt class="text-xs text-zinc-500">Support</dt>
-              <dd class="mt-1 text-sm font-semibold">24/7</dd>
-            </div>
-          </dl>
-        </div>
-
-        <!-- Simple “product” visual -->
-        <div class="relative overflow-hidden rounded-3xl border border-zinc-200 bg-gradient-to-b from-zinc-50 to-white p-5 sm:p-8">
-          <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-zinc-900/5"></div>
-          <div class="absolute -bottom-12 -left-12 h-56 w-56 rounded-full bg-zinc-900/5"></div>
-          <div class="relative grid gap-3">
-            <div class="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
-              <div class="flex items-center gap-3">
-                <div class="h-12 w-12 rounded-2xl bg-zinc-100"></div>
-                <div class="flex-1">
-                  <div class="h-3 w-36 rounded bg-zinc-100"></div>
-                  <div class="mt-2 h-3 w-24 rounded bg-zinc-100"></div>
-                </div>
-                <div class="h-8 w-16 rounded-xl bg-zinc-900"></div>
-              </div>
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-              <div class="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
-                <div class="h-20 rounded-2xl bg-zinc-100"></div>
-                <div class="mt-3 h-3 w-24 rounded bg-zinc-100"></div>
-                <div class="mt-2 h-3 w-16 rounded bg-zinc-100"></div>
-              </div>
-              <div class="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
-                <div class="h-20 rounded-2xl bg-zinc-100"></div>
-                <div class="mt-3 h-3 w-24 rounded bg-zinc-100"></div>
-                <div class="mt-2 h-3 w-16 rounded bg-zinc-100"></div>
-              </div>
-            </div>
-            <p class="text-xs text-zinc-500">Tip: replace placeholders with product images.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- Filters -->
-    <section class="mt-8" aria-label="Filters">
+    <section class="mt-2" aria-label="Filters">
       <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div class="space-y-1">
           <h2 id="products" class="text-base font-semibold tracking-tight">Products</h2>
@@ -136,12 +58,17 @@
             <input id="searchInput" class="w-full rounded-2xl border border-zinc-200 bg-white py-2.5 pl-9 pr-3 text-sm shadow-sm placeholder:text-zinc-400 focus:border-zinc-300 focus:outline-none focus:ring-4 focus:ring-zinc-900/10" placeholder="Search" />
           </label>
 
-          <select id="sortSelect" class="w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2.5 text-sm shadow-sm focus:border-zinc-300 focus:outline-none focus:ring-4 focus:ring-zinc-900/10 sm:w-44">
-            <option value="featured">Featured</option>
-            <option value="price-asc">Price: Low → High</option>
-            <option value="price-desc">Price: High → Low</option>
-            <option value="name-asc">Name: A → Z</option>
-          </select>
+          <div class="relative sm:w-44">
+            <select id="sortSelect" class="w-full appearance-none rounded-2xl border border-zinc-200 bg-white px-3 py-2.5 pr-10 text-sm shadow-sm focus:border-zinc-300 focus:outline-none focus:ring-4 focus:ring-zinc-900/10">
+              <option value="featured">Featured</option>
+              <option value="price-asc">Price: Low → High</option>
+              <option value="price-desc">Price: High → Low</option>
+              <option value="name-asc">Name: A → Z</option>
+            </select>
+            <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-zinc-500">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </div>
         </div>
       </div>
 
@@ -155,7 +82,7 @@
 
     <!-- Product grid -->
     <section class="mt-5" aria-label="Product list">
-      <div id="grid" class="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
+      <div id="grid" class="grid grid-cols-1 gap-3 sm:grid-cols-1 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
         <!-- Cards injected by JS -->
       </div>
     </section>
@@ -436,12 +363,45 @@
     // --- Loading state ---
     function setLoading(loading) {
       state.loading = loading;
-      // Don't modify cart button innerHTML - it destroys the badge span
+
+      // Update checkout button
+      const checkoutBtn = $('#checkoutForm button[type="submit"]');
+      if (checkoutBtn) {
+        if (loading) {
+          checkoutBtn.disabled = true;
+          checkoutBtn.innerHTML = `
+            <svg class="mr-2 size-4 animate-spin inline" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Processing...
+          `;
+        } else {
+          checkoutBtn.disabled = false;
+          checkoutBtn.textContent = 'Place Order';
+        }
+      }
     }
 
     // --- Load products ---
     async function loadProducts() {
       try {
+        // Show loading state in grid
+        const grid = $('#grid');
+        if (grid) {
+          grid.innerHTML = `
+            <div class="col-span-full flex items-center justify-center py-12">
+              <div class="flex items-center space-x-2 text-zinc-600">
+                <svg class="size-5 animate-spin" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Loading products...</span>
+              </div>
+            </div>
+          `;
+        }
+
         setLoading(true);
         const data = await apiRequest('/products.json');
         products = data;
@@ -605,7 +565,7 @@
 
       const selectedVariant = getSelectedVariant();
       const price = selectedVariant ? `$${(selectedVariant.price / 100).toFixed(2)}` : 'Select options';
-      const stockStatus = getStockStatus(selectedVariant);
+      const stockStatus = selectedVariant ? getStockStatus(selectedVariant) : { text: 'Select options', class: 'text-zinc-500' };
       const canAddToCart = selectedVariant && selectedVariant.stock > 0 && selectedVariant.active;
       const images = Array.isArray(product.images) ? product.images : (typeof product.images === 'string' ? JSON.parse(product.images) : []);
       const imageUrl = images.length > 0 ? images[0] : '';
@@ -654,6 +614,51 @@
       `;
 
       updateVariantSelection();
+
+      // Attach event handlers for size and color options
+      attachVariantSelectionHandlers();
+    }
+
+    function attachVariantSelectionHandlers() {
+      console.log('🔧 Attaching variant selection handlers...');
+
+      // Size option click handlers
+      const sizeOptions = $$('.size-option');
+      console.log(`📏 Found ${sizeOptions.length} size options to attach handlers to`);
+
+      sizeOptions.forEach((btn, index) => {
+        console.log(`🔧 Attaching click handler to size option ${index + 1}: ${btn.textContent.trim()}`);
+        btn.addEventListener('click', () => {
+          console.log(`🖱️ Size option clicked: ${btn.textContent.trim()}`);
+          // Remove selected class from all size options
+          $$('.size-option').forEach(b => b.classList.remove('selected'));
+          // Add selected class to clicked option
+          btn.classList.add('selected');
+          console.log(`✅ Selected class added to: ${btn.textContent.trim()}`);
+          // Update variant selection
+          updateVariantSelection();
+        });
+      });
+
+      // Color option click handlers
+      const colorOptions = $$('.color-option');
+      console.log(`🎨 Found ${colorOptions.length} color options to attach handlers to`);
+
+      colorOptions.forEach((btn, index) => {
+        console.log(`🔧 Attaching click handler to color option ${index + 1}: ${btn.textContent.trim()}`);
+        btn.addEventListener('click', () => {
+          console.log(`🖱️ Color option clicked: ${btn.textContent.trim()}`);
+          // Remove selected class from all color options
+          $$('.color-option').forEach(b => b.classList.remove('selected'));
+          // Add selected class to clicked option
+          btn.classList.add('selected');
+          console.log(`✅ Selected class added to: ${btn.textContent.trim()}`);
+          // Update variant selection
+          updateVariantSelection();
+        });
+      });
+
+      console.log('✅ Variant selection handlers attached');
     }
 
     function renderSizeSelector() {
@@ -701,10 +706,32 @@
     function getSelectedVariant() {
       const selectedSize = $('#productDetail')?.querySelector('.size-option.selected')?.dataset.size;
       const selectedColor = $('#productDetail')?.querySelector('.color-option.selected')?.dataset.color;
+      const variants = state.currentProduct?.variants || [];
+      const sizes = [...new Set(variants.map(v => v.size).filter(Boolean))];
+      const colors = [...new Set(variants.map(v => v.color).filter(Boolean))];
+      const requireSize = sizes.length > 1;
+      const requireColor = colors.length > 1;
 
-      return state.currentProduct?.variants.find(v =>
-        (!selectedSize || v.size === selectedSize) &&
-        (!selectedColor || v.color === selectedColor)
+      // If no size selected and multiple sizes exist, default to "Medium"
+      let effectiveSize = selectedSize;
+      if (requireSize && !selectedSize) {
+        if (sizes.includes('Medium')) {
+          effectiveSize = 'Medium';
+        } else {
+          return null; // Still require selection if Medium doesn't exist
+        }
+      }
+
+      let effectiveColor = selectedColor;
+      if (!effectiveColor && colors.length > 0) {
+        effectiveColor = colors.includes('Default') ? 'Default' : colors[0];
+      }
+
+      if (requireColor && !effectiveColor) return null;
+
+      return variants.find(v =>
+        (!effectiveSize || v.size === effectiveSize) &&
+        (!effectiveColor || v.color === effectiveColor)
       );
     }
 
@@ -720,13 +747,39 @@
       const selectedSize = $('#productDetail')?.querySelector('.size-option.selected')?.dataset.size;
       const selectedColor = $('#productDetail')?.querySelector('.color-option.selected')?.dataset.color;
 
+      const sizes = [...new Set(state.currentProduct.variants.map(v => v.size).filter(Boolean))];
+      const colors = [...new Set(state.currentProduct.variants.map(v => v.color).filter(Boolean))];
+
+      // If no size is selected and we have sizes, default to Medium
+      let effectiveSize = selectedSize;
+      if (!effectiveSize && sizes.length > 0) {
+        const mediumVariant = state.currentProduct.variants.find(v => v.size === 'Medium');
+        if (mediumVariant) {
+          effectiveSize = 'Medium';
+          // Select the Medium size button
+          const mediumBtn = $('#productDetail')?.querySelector('.size-option[data-size="Medium"]');
+          if (mediumBtn) {
+            mediumBtn.classList.add('selected');
+          }
+        }
+      }
+
+      let effectiveColor = selectedColor;
+      if (!effectiveColor && colors.length > 0) {
+        effectiveColor = colors.includes('Default') ? 'Default' : colors[0];
+        const colorBtn = $('#productDetail')?.querySelector(`.color-option[data-color="${effectiveColor}"]`);
+        if (colorBtn) {
+          colorBtn.classList.add('selected');
+        }
+      }
+
       // Update size buttons
       $$('.size-option').forEach(btn => {
         const size = btn.dataset.size;
         const hasVariants = state.currentProduct.variants.some(v =>
-          v.size === size && (!selectedColor || v.color === selectedColor)
+          v.size === size && (!effectiveColor || v.color === effectiveColor)
         );
-        btn.classList.toggle('selected', size === selectedSize);
+        btn.classList.toggle('selected', size === effectiveSize);
         btn.classList.toggle('opacity-50', !hasVariants);
         btn.disabled = !hasVariants;
       });
@@ -735,9 +788,9 @@
       $$('.color-option').forEach(btn => {
         const color = btn.dataset.color;
         const hasVariants = state.currentProduct.variants.some(v =>
-          v.color === color && (!selectedSize || v.size === selectedSize)
+          v.color === color && (!effectiveSize || v.size === effectiveSize)
         );
-        btn.classList.toggle('selected', color === selectedColor);
+        btn.classList.toggle('selected', color === effectiveColor);
         btn.classList.toggle('opacity-50', !hasVariants);
         btn.disabled = !hasVariants;
       });
@@ -796,6 +849,13 @@
       try {
         setLoading(true);
 
+        // Validate quantity limits
+        for (const [variantId, qty] of state.cart.entries()) {
+          if (qty > 5) {
+            throw new Error('Maximum 5 items per variant allowed');
+          }
+        }
+
         // Build order items from cart
         const items = [];
         if (allVariants.length === 0) {
@@ -835,6 +895,7 @@
         // Success
         state.cart.clear();
         saveCart();
+        updateCartBadge(0);
         closeOverlay($('#checkoutOverlay'));
         
         // Show confirmation
@@ -868,6 +929,10 @@
       // Ensure variantId is a number
       variantId = Number(variantId);
       const currentQty = state.cart.get(variantId) || 0;
+      if (currentQty >= 5) {
+        toast('Maximum 5 items per variant allowed');
+        return;
+      }
       state.cart.set(variantId, currentQty + 1);
       saveCart();
       updateCartBadge(getCartCount());
@@ -898,7 +963,12 @@
 
     function incItem(variantId) {
       variantId = Number(variantId);
-      state.cart.set(variantId, (state.cart.get(variantId) || 0) + 1);
+      const currentQty = state.cart.get(variantId) || 0;
+      if (currentQty >= 5) {
+        toast('Maximum 5 items per variant allowed');
+        return;
+      }
+      state.cart.set(variantId, currentQty + 1);
       saveCart();
       updateCartBadge(getCartCount());
       renderCart();
@@ -983,7 +1053,7 @@
             product,
             qty: numQty,
             imageUrl,
-            variantLabel: variant ? `${variant.size}${variant.color ? ' / ' + variant.color : ''}` : 'Unknown variant',
+            variantLabel: variant ? `${variant.size}${variant.color && variant.color !== 'Default' ? ' / ' + variant.color : ''}` : 'Unknown variant',
             price: variant ? variant.price / 100 : 0
           };
         }).filter(item => item.variant && item.product);
@@ -1014,7 +1084,7 @@
                   <div class="inline-flex items-center gap-1 rounded-2xl border border-zinc-200 bg-zinc-50 p-0.5">
                     <button class="rounded-xl px-2.5 py-1 text-sm font-medium hover:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/10" onclick="decItem(${x.variant.id})" aria-label="Decrease">−</button>
                     <span class="w-7 text-center text-sm font-medium">${x.qty}</span>
-                    <button class="rounded-xl px-2.5 py-1 text-sm font-medium hover:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/10" onclick="incItem(${x.variant.id})" aria-label="Increase">+</button>
+                    <button class="rounded-xl px-2.5 py-1 text-sm font-medium hover:bg-white focus:outline-none focus:ring-2 focus:ring-zinc-900/10 ${x.qty >= 5 ? 'opacity-50 cursor-not-allowed' : ''}" onclick="incItem(${x.variant.id})" ${x.qty >= 5 ? 'disabled' : ''} aria-label="Increase">+</button>
                   </div>
                   <p class="text-sm font-semibold">$${(x.price * x.qty).toFixed(2)}</p>
                 </div>
@@ -1097,8 +1167,10 @@
 
       // Search
       const search = async (val) => { state.q = val; await renderGrid(); };
-      $('#searchInput').addEventListener('input', (e) => search(e.target.value));
-      $('#searchInputMobile').addEventListener('input', (e) => search(e.target.value));
+      const searchInput = $('#searchInput');
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => search(e.target.value));
+      }
 
       // Sort
       $('#sortSelect').addEventListener('change', async (e) => { state.sort = e.target.value; await renderGrid(); });

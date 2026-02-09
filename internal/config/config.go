@@ -18,6 +18,7 @@ type Config struct {
 	Environment string
 	BrevoAPIKey string
 	EmailFrom   string
+	OrderStatusURLBase string
 }
 
 // Load reads configuration from environment variables (and .env file if present).
@@ -40,6 +41,7 @@ func Load() *Config {
 		Environment: getEnv("ENVIRONMENT", "development"),
 		BrevoAPIKey: getEnv("BREVO_API_KEY", ""),
 		EmailFrom:   getEnv("DEFAULT_FROM_EMAIL", "store@bhomanshah.com"),
+		OrderStatusURLBase: getEnv("ORDER_STATUS_URL_BASE", "https://bhomanshah.com/order-status"),
 	}
 }
 
