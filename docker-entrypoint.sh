@@ -27,7 +27,7 @@ run_migrations() {
 # Start the application
 start_app() {
     echo "Starting OXLOOK API..."
-    ./koyeb-go
+    ./main
 }
 
 # Main execution
