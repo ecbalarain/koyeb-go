@@ -7,6 +7,7 @@
   
   <!-- SEO & Performance -->
   <meta name="description" content="Simplest, clean, minimal mobile-first online store UI." />
+  <link rel="icon" href="assets/favicon.png" type="image/png" />
   
   <!-- Preconnect to improve performance -->
   <link rel="preconnect" href="https://cdn.tailwindcss.com" />
@@ -17,72 +18,87 @@
 </head>
 <body class="min-h-screen bg-zinc-50 text-zinc-900">
   <!-- Top bar -->
-  <header class="sticky top-0 z-30 border-b border-zinc-200/70 bg-white/75 backdrop-blur">
-    <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-      <!-- Mobile menu button -->
-      <button id="menuBtn" class="rounded-xl border border-zinc-200 bg-white p-2 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-900/20 sm:hidden" type="button" aria-label="Open menu">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>
-      </button>
-
-      <!-- Desktop nav -->
-      <nav class="hidden sm:flex items-center space-x-6">
-        <a href="#" class="text-sm font-medium hover:text-zinc-600">New Arrivals</a>
-        <a href="#" class="text-sm font-medium hover:text-zinc-600">Men</a>
-        <a href="#" class="text-sm font-medium hover:text-zinc-600">Women</a>
-        <a href="#" class="text-sm font-medium hover:text-zinc-600">Kids</a>
-        <a href="#" class="text-sm font-medium hover:text-zinc-600">Sale %</a>
-      </nav>
-
-      <!-- Logo center -->
-      <a href="#" class="flex items-center absolute left-1/2 transform -translate-x-1/2 sm:relative sm:left-auto sm:transform-none">
-        <img src="assets/logo.jpg" alt="Oxlook" class="h-8 w-auto">
-      </a>
-
-      <!-- Cart -->
-      <button id="cartBtn" class="relative rounded-xl border border-zinc-200 bg-white p-2 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-900/20" type="button" aria-label="Open cart">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.6 12.3a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6l1.7-8.7H6.2"/></svg>
-        <span id="cartCount" class="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-zinc-900 text-xs font-semibold text-white hidden">0</span>
-      </button>
+  <header id="mainHeader" class="border-b border-zinc-200/70 bg-white">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <!-- Header row -->
+      <div class="flex flex-col items-center py-6">
+        <!-- Logo (bigger + no crop) -->
+        <a href="#" class="tap flex flex-col items-center gap-3" aria-label="Oxlook Home">
+          <img
+            src="assets/logo.jpg"
+            alt="Oxlook"
+            class="h-20 w-auto max-w-[220px] object-contain"
+            loading="eager"
+          />
+        </a>
+      </div>
     </div>
   </header>
+
+  <!-- Sticky Navigation -->
+  <nav class="sticky top-0 z-40 border-b border-zinc-200/70 bg-white backdrop-blur-md">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <div class="flex flex-wrap items-center justify-center gap-x-7 gap-y-3 py-3 text-sm">
+        <a href="#" class="font-medium text-zinc-700 hover:text-zinc-900">New</a>
+        <a href="#" class="font-medium text-zinc-700 hover:text-zinc-900">Men</a>
+        <a href="#" class="font-medium text-zinc-700 hover:text-zinc-900">Women</a>
+        <a href="#" class="font-medium text-zinc-700 hover:text-zinc-900">Kids</a>
+        <a href="#" class="font-medium text-zinc-700 hover:text-zinc-900">Sale</a>
+      </div>
+    </div>
+  </nav>
 
   <!-- Main -->
   <main class="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
     <!-- Filters -->
-    <section class="mt-2" aria-label="Filters">
+    <section class="sticky top-[44px] z-30 -mx-4 mb-4 bg-zinc-50/80 px-4 py-2 backdrop-blur-md sm:-mx-6 sm:px-6" aria-label="Filters">
       <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div class="space-y-1">
-          <h2 id="products" class="text-base font-semibold tracking-tight">Products</h2>
-          <p class="text-sm text-zinc-600">Minimal grid, friendly spacing, responsive by default.</p>
-        </div>
-        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <label class="relative block sm:w-64">
-            <span class="sr-only">Search products</span>
-            <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-zinc-400">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            </span>
-            <input id="searchInput" class="w-full rounded-2xl border border-zinc-200 bg-white py-2.5 pl-9 pr-3 text-sm shadow-sm placeholder:text-zinc-400 focus:border-zinc-300 focus:outline-none focus:ring-4 focus:ring-zinc-900/10" placeholder="Search" />
-          </label>
+        
+        <div class="flex w-full items-center justify-between gap-2">
+          <div class="flex flex-1 items-center gap-2 overflow-hidden">
+            <!-- Icon-style Sort Dropdown -->
+            <div class="relative shrink-0 sm:w-auto">
+               <div class="relative">
+                <select id="sortSelect" class="h-11 w-11 appearance-none rounded-2xl border border-zinc-200 bg-white text-transparent shadow-sm focus:border-zinc-300 focus:outline-none sm:w-auto sm:px-3 sm:py-2.5 sm:pr-8 sm:text-zinc-900 cursor-pointer">
+                  <option value="featured" class="text-zinc-900">Featured</option>
+                  <option value="price-asc" class="text-zinc-900">Price: Low → High</option>
+                  <option value="price-desc" class="text-zinc-900">Price: High → Low</option>
+                  <option value="name-asc" class="text-zinc-900">Name: A → Z</option>
+                </select>
+                <div class="pointer-events-none absolute inset-0 flex items-center justify-center sm:hidden">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="size-5 text-zinc-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M7 12h10"/><path d="M10 18h4"/></svg>
+                </div>
+                <div class="pointer-events-none absolute inset-y-0 right-2 hidden items-center text-zinc-500 sm:flex">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </div>
+              </div>
+            </div>
 
-          <div class="relative sm:w-44">
-            <select id="sortSelect" class="w-full appearance-none rounded-2xl border border-zinc-200 bg-white px-3 py-2.5 pr-10 text-sm shadow-sm focus:border-zinc-300 focus:outline-none focus:ring-4 focus:ring-zinc-900/10">
-              <option value="featured">Featured</option>
-              <option value="price-asc">Price: Low → High</option>
-              <option value="price-desc">Price: High → Low</option>
-              <option value="name-asc">Name: A → Z</option>
-            </select>
-            <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-zinc-500">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-            </span>
+            <!-- Expanding Search Icon -->
+            <div class="relative flex-1 sm:max-w-xs">
+              <button id="searchToggle" type="button" class="group flex items-center justify-center rounded-2xl border border-zinc-200 bg-white p-2.5 shadow-sm transition hover:bg-zinc-50 focus:outline-none sm:hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-5 text-zinc-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              </button>
+              <div id="searchWrapper" class="hidden w-full sm:block">
+                <div class="relative w-full">
+                  <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-zinc-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                  </span>
+                  <input id="searchInput" class="w-full rounded-2xl border border-zinc-200 bg-white py-2.5 pl-9 pr-3 text-sm shadow-sm placeholder:text-zinc-400 focus:border-zinc-300 focus:outline-none" placeholder="Search" />
+                  <button id="searchClose" type="button" class="absolute inset-y-0 right-2 flex items-center text-zinc-400 sm:hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
 
-      <div class="mt-3 flex flex-wrap gap-2">
-        <button data-chip="All" class="chip is-active">All</button>
-        <button data-chip="Basics" class="chip">Basics</button>
-        <button data-chip="Home" class="chip">Home</button>
-        <button data-chip="Tech" class="chip">Tech</button>
+          <!-- Filter Cart Icon -->
+          <button id="filterCartBtn" class="relative flex shrink-0 items-center justify-center rounded-2xl border border-zinc-200 bg-white p-2.5 shadow-sm transition hover:bg-zinc-50 focus:outline-none" type="button" aria-label="Open cart">
+            <svg xmlns="http://www.w3.org/2000/svg" class="size-5 text-zinc-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.6 12.3a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6l1.7-8.7H6.2"/></svg>
+            <span id="cartCount" class="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-red-500 text-xs font-semibold text-white hidden">0</span>
+          </button>
+        </div>
       </div>
     </section>
 
@@ -127,25 +143,10 @@
     </div>
   </div>
 
-  <!-- Mobile menu drawer -->
-  <div id="menuOverlay" class="fixed inset-0 z-40 hidden">
-    <div class="absolute inset-0 bg-zinc-900/30" data-close></div>
-    <div class="absolute right-0 top-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl">
-      <div class="flex items-center justify-between border-b border-zinc-200 px-4 py-3">
-        <p class="text-sm font-semibold">Menu</p>
-        <button class="rounded-xl p-2 hover:bg-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-900/20" data-close aria-label="Close">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
-        </button>
-      </div>
-      <nav class="px-4 py-4 text-sm">
-        <a class="block rounded-2xl px-3 py-2 hover:bg-zinc-50" href="#">New Arrivals</a>
-        <a class="block rounded-2xl px-3 py-2 hover:bg-zinc-50" href="#">Men</a>
-        <a class="block rounded-2xl px-3 py-2 hover:bg-zinc-50" href="#">Women</a>
-        <a class="block rounded-2xl px-3 py-2 hover:bg-zinc-50" href="#">Kids</a>
-        <a class="block rounded-2xl px-3 py-2 hover:bg-zinc-50" href="#">Sale %</a>
-      </nav>
-    </div>
-  </div>
+  <!-- Scroll to top button -->
+  <button id="scrollTopBtn" class="fixed bottom-6 right-6 z-40 hidden rounded-full bg-zinc-900 p-3 text-white shadow-lg transition hover:bg-zinc-800 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-zinc-900/20" type="button" aria-label="Scroll to top">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+  </button>
 
   <!-- Cart drawer -->
   <div id="cartOverlay" class="fixed inset-0 z-40 hidden">
@@ -279,6 +280,8 @@
     .size-option.selected, .color-option.selected { @apply border-zinc-900 bg-zinc-900 text-white; }
     /* iOS momentum scrolling */
     #productDetail { -webkit-overflow-scrolling: touch; }
+    /* Slower view transitions */
+    ::view-transition-group(*) { animation-duration: 1s; }
   </style>
 
   <script>
@@ -461,7 +464,7 @@
       const images = Array.isArray(p.images) ? p.images : (typeof p.images === 'string' ? JSON.parse(p.images) : []);
       const imageUrl = images.length > 0 ? images[0] : '';
       return `
-        <article class="group rounded-3xl border border-zinc-200 bg-white p-3 shadow-sm transition hover:shadow-md cursor-pointer" onclick="showProductDetail(${p.id})">
+        <article style="view-transition-name: product-${p.id}" class="group rounded-3xl border border-zinc-200 bg-white p-3 shadow-sm transition hover:shadow-md cursor-pointer" onclick="showProductDetail(${p.id})">
           <div class="aspect-[4/3] overflow-hidden rounded-2xl bg-zinc-100">
             ${imageUrl ? `<img src="${imageUrl}" alt="${p.name}" class="h-full w-full object-cover" />` : `<div class="h-full w-full bg-gradient-to-b from-zinc-100 to-zinc-50"></div>`}
           </div>
@@ -529,11 +532,19 @@
         p.minPrice = await getMinPrice(p.id);
       }));
       
-      $('#grid').innerHTML = list.map(productCard).join('') || `
-        <div class="col-span-full rounded-3xl border border-zinc-200 bg-white p-6 text-center text-sm text-zinc-600 shadow-sm">
-          No products found.
-        </div>
-      `;
+      const updateDOM = () => {
+        $('#grid').innerHTML = list.map(productCard).join('') || `
+          <div class="col-span-full rounded-3xl border border-zinc-200 bg-white p-6 text-center text-sm text-zinc-600 shadow-sm">
+            No products found.
+          </div>
+        `;
+      };
+
+      if (document.startViewTransition) {
+        document.startViewTransition(updateDOM);
+      } else {
+        updateDOM();
+      }
     }
 
     // --- Product Detail ---
@@ -1124,8 +1135,7 @@
         $('#confirmationOverlay'),
         $('#checkoutOverlay'),
         $('#productOverlay'),
-        $('#cartOverlay'),
-        $('#menuOverlay')
+        $('#cartOverlay')
       ];
 
       for (const overlay of overlays) {
@@ -1158,6 +1168,7 @@
 
     // --- Init ---
     async function init() {
+
       $('#year').textContent = String(new Date().getFullYear());
 
       // Load cart from localStorage
@@ -1175,27 +1186,45 @@
       // Search
       const search = async (val) => { state.q = val; await renderGrid(); };
       const searchInput = $('#searchInput');
+      const searchWrapper = $('#searchWrapper');
+      const searchToggle = $('#searchToggle');
+      const searchClose = $('#searchClose');
+
       if (searchInput) {
         searchInput.addEventListener('input', (e) => search(e.target.value));
+      }
+
+      if (searchToggle && searchWrapper) {
+          searchToggle.addEventListener('click', () => {
+              searchToggle.classList.add('hidden');
+              searchWrapper.classList.remove('hidden');
+              searchInput.focus();
+          });
+      }
+
+      if (searchClose && searchWrapper && searchToggle) {
+          searchClose.addEventListener('click', () => {
+              searchWrapper.classList.add('hidden');
+              searchToggle.classList.remove('hidden');
+              searchInput.value = '';
+              search('');
+          });
       }
 
       // Sort
       $('#sortSelect').addEventListener('change', async (e) => { state.sort = e.target.value; await renderGrid(); });
 
       // Overlays
-      const menuOverlay = $('#menuOverlay');
       const cartOverlay = $('#cartOverlay');
       const productOverlay = $('#productOverlay');
       const checkoutOverlay = $('#checkoutOverlay');
       const confirmationOverlay = $('#confirmationOverlay');
-      wireOverlay(menuOverlay);
       wireOverlay(cartOverlay);
       wireOverlay(productOverlay);
       wireOverlay(checkoutOverlay);
       wireOverlay(confirmationOverlay);
 
-      $('#menuBtn').addEventListener('click', () => openOverlay(menuOverlay));
-      $('#cartBtn').addEventListener('click', async () => {
+      $('#filterCartBtn').addEventListener('click', async () => {
         if (!cartOverlay.classList.contains('hidden')) {
           closeOverlay(cartOverlay);
           return;
@@ -1203,6 +1232,22 @@
         await renderCart();
         openOverlay(cartOverlay);
       });
+
+      // Scroll to top
+      const scrollTopBtn = $('#scrollTopBtn');
+      if (scrollTopBtn) {
+        window.addEventListener('scroll', () => {
+          if (window.scrollY > window.innerHeight) {
+            scrollTopBtn.classList.remove('hidden');
+          } else {
+            scrollTopBtn.classList.add('hidden');
+          }
+        }, { passive: true });
+
+        scrollTopBtn.addEventListener('click', () => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      }
 
       // Checkout form
       $('#checkoutForm').addEventListener('submit', async (e) => {
