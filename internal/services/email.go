@@ -63,7 +63,7 @@ func (e *EmailService) orderStatusURL(orderID int64, email string) string {
 		return ""
 	}
 	base = strings.TrimRight(base, "/")
-	return fmt.Sprintf("%s/%d?email=%s", base, orderID, email)
+	return fmt.Sprintf("%s/order-status.html?order_id=%d&email=%s", base, orderID, email)
 }
 
 func (e *EmailService) renderOrderItems(items []models.OrderItem) string {
