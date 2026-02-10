@@ -1,0 +1,283 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight">Orders</h1>
+      <p class="mt-1 text-sm text-zinc-600">Manage customer orders and fulfillment</p>
+    </div>
+    <button id="refreshBtn" class="btn-secondary">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+      Refresh
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <div class="rounded-3xl border border-zinc-200 bg-white p-4 shadow-sm">
+    <div class="flex flex-wrap gap-4">
+      <div>
+        <label class="form-label">Status</label>
+        <select id="statusFilter" class="form-input w-40">
+          <option value="">All Statuses</option>
+          <option value="new">New</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="shipped">Shipped</option>
+          <option value="canceled">Canceled</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Orders table -->
+  <div class="rounded-3xl border border-zinc-200 bg-white shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="ordersTableBody">
+          <!-- Orders will be loaded here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Empty state -->
+  <div id="emptyState" class="hidden rounded-3xl border border-zinc-200 bg-white p-12 text-center">
+    <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.05 2.05h2l2.6 12.3a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6l1.7-8.7H6.2"/></svg>
+    <h3 class="mt-4 text-lg font-medium text-zinc-900">No orders found</h3>
+    <p class="mt-2 text-sm text-zinc-600">Orders will appear here once customers start placing them.</p>
+  </div>
+</div>
+
+<!-- Order Detail Modal -->
+<div id="orderModal" class="fixed inset-0 z-50 hidden">
+  <div class="absolute inset-0 bg-zinc-900/30" data-close></div>
+  <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-white rounded-3xl shadow-2xl max-h-[90vh] overflow-hidden">
+    <div class="flex items-center justify-between border-b border-zinc-200 px-6 py-4">
+      <h3 class="text-lg font-semibold">Order Details</h3>
+      <button class="rounded-xl p-2 hover:bg-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-900/20" data-close aria-label="Close">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div id="orderDetailContent" class="overflow-y-auto px-6 py-4">
+      <!-- Order details will be loaded here -->
+    </div>
+  </div>
+</div>
+
+<script>
+  let orders = [];
+  let currentStatusFilter = '';
+
+  // --- Order row template ---
+  function orderRow(order) {
+    const statusClass = `status-${order.status}`;
+    const formattedDate = new Date(order.created_at).toLocaleDateString();
+
+    return `
+      <tr>
+        <td class="font-medium">#${order.id}</td>
+        <td>
+          <div>
+            <div class="font-medium">${order.customer_name}</div>
+            <div class="text-sm text-zinc-500">${order.customer_email}</div>
+            <div class="text-sm text-zinc-500">${order.customer_phone}</div>
+          </div>
+        </td>
+        <td class="font-medium">$${(order.total / 100).toFixed(2)}</td>
+        <td>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}">
+            ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+          </span>
+        </td>
+        <td class="text-sm text-zinc-600">${formattedDate}</td>
+        <td>
+          <div class="flex items-center gap-2">
+            <button onclick="viewOrder(${order.id})" class="text-zinc-600 hover:text-zinc-900">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+            <select onchange="updateOrderStatus(${order.id}, this.value)" class="text-xs border border-zinc-200 rounded px-2 py-1">
+              <option value="">Change status</option>
+              <option value="new">New</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="shipped">Shipped</option>
+              <option value="canceled">Canceled</option>
+            </select>
+          </div>
+        </td>
+      </tr>
+    `;
+  }
+
+  // --- Load orders ---
+  async function loadOrders() {
+    try {
+      const params = currentStatusFilter ? `?status=${currentStatusFilter}` : '';
+      const data = await apiRequest(`/admin/api/orders${params}`);
+      orders = data;
+      renderOrders();
+    } catch (error) {
+      console.error('Failed to load orders:', error);
+    }
+  }
+
+  // --- Render orders ---
+  function renderOrders() {
+    const tbody = $('#ordersTableBody');
+    const empty = $('#emptyState');
+
+    if (orders.length === 0) {
+      tbody.innerHTML = '';
+      empty.classList.remove('hidden');
+    } else {
+      empty.classList.add('hidden');
+      tbody.innerHTML = orders.map(orderRow).join('');
+    }
+  }
+
+  // --- View order details ---
+  async function viewOrder(orderId) {
+    try {
+      const data = await apiRequest(`/admin/api/orders/${orderId}`);
+      showOrderModal(data.order, data.items);
+    } catch (error) {
+      console.error('Failed to load order details:', error);
+    }
+  }
+
+  // --- Show order modal ---
+  function showOrderModal(order, items) {
+    const formattedDate = new Date(order.created_at).toLocaleString();
+    const statusClass = `status-${order.status}`;
+
+    const itemsHtml = items.map(item => `
+      <div class="flex items-center justify-between py-2 border-b border-zinc-100 last:border-b-0">
+        <div>
+          <div class="font-medium">${item.product_name}</div>
+          <div class="text-sm text-zinc-600">${item.variant_label}</div>
+        </div>
+        <div class="text-right">
+          <div class="font-medium">$${(item.price_at_purchase / 100).toFixed(2)}</div>
+          <div class="text-sm text-zinc-600">Qty: ${item.qty}</div>
+        </div>
+      </div>
+    `).join('');
+
+    const content = `
+      <div class="space-y-6">
+        <!-- Order header -->
+        <div class="flex items-center justify-between">
+          <div>
+            <h4 class="text-lg font-semibold">Order #${order.id}</h4>
+            <p class="text-sm text-zinc-600">${formattedDate}</p>
+          </div>
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusClass}">
+            ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+          </span>
+        </div>
+
+        <!-- Customer info -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
+            <h5 class="font-medium mb-2">Customer Details</h5>
+            <div class="space-y-1 text-sm">
+              <p><span class="text-zinc-600">Name:</span> ${order.customer_name}</p>
+              <p><span class="text-zinc-600">Email:</span> ${order.customer_email}</p>
+              <p><span class="text-zinc-600">Phone:</span> ${order.customer_phone}</p>
+              <p><span class="text-zinc-600">Address:</span> ${order.customer_address}</p>
+              <p><span class="text-zinc-600">City:</span> ${order.customer_city}</p>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
+            <h5 class="font-medium mb-2">Order Summary</h5>
+            <div class="space-y-1 text-sm">
+              <p><span class="text-zinc-600">Items:</span> ${items.length}</p>
+              <p><span class="text-zinc-600">Total:</span> $${(order.total / 100).toFixed(2)}</p>
+              <p><span class="text-zinc-600">Status:</span> ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order items -->
+        <div>
+          <h5 class="font-medium mb-3">Order Items</h5>
+          <div class="space-y-2">
+            ${itemsHtml}
+          </div>
+        </div>
+
+        <!-- Notes -->
+        ${order.notes ? `
+          <div>
+            <h5 class="font-medium mb-2">Notes</h5>
+            <p class="text-sm text-zinc-600 bg-zinc-50 rounded-lg p-3">${order.notes}</p>
+          </div>
+        ` : ''}
+      </div>
+    `;
+
+    $('#orderDetailContent').innerHTML = content;
+    $('#orderModal').classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+  }
+
+  // --- Hide order modal ---
+  function hideOrderModal() {
+    $('#orderModal').classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
+  }
+
+  // --- Update order status ---
+  async function updateOrderStatus(orderId, newStatus) {
+    if (!newStatus) return;
+
+    try {
+      await apiRequest(`/admin/api/orders/${orderId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      toast('Order status updated successfully');
+
+      // Update local data
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        order.status = newStatus;
+        renderOrders();
+      }
+    } catch (error) {
+      console.error('Failed to update order status:', error);
+    }
+  }
+
+  // --- Initialize ---
+  function initOrdersPage() {
+    // Modal events
+    $('#orderModal').addEventListener('click', (e) => {
+      if (e.target.matches('[data-close]')) hideOrderModal();
+    });
+
+    // Filter events
+    $('#statusFilter').addEventListener('change', (e) => {
+      currentStatusFilter = e.target.value;
+      loadOrders();
+    });
+
+    // Buttons
+    $('#refreshBtn').addEventListener('click', loadOrders);
+
+    loadOrders();
+  }
+
+  // Make functions globally available
+  window.initOrdersPage = initOrdersPage;
+</script>
