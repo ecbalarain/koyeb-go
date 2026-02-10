@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/koyeb/example-golang/internal/models"
@@ -13,16 +14,16 @@ import (
 
 // EmailService handles sending emails via Brevo API.
 type EmailService struct {
-	apiKey string
-	from   string
+	apiKey          string
+	from            string
 	orderStatusBase string
 }
 
 // NewEmailService creates a new email service.
 func NewEmailService(apiKey, from, orderStatusBase string) *EmailService {
 	return &EmailService{
-		apiKey: apiKey,
-		from:   from,
+		apiKey:          apiKey,
+		from:            from,
 		orderStatusBase: orderStatusBase,
 	}
 }
@@ -57,13 +58,42 @@ Bhomanshah Team</p>
 	return e.sendEmail(to, subject, htmlContent)
 }
 
+// SendOrderStatusUpdate sends an email when an order status changes.
+func (e *EmailService) SendOrderStatusUpdate(to, customerName string, orderID int64, newStatus string) error {
+	if e.apiKey == "" {
+		// Skip sending if API key not configured
+		return nil
+	}
+
+	statusLabel := formatStatusLabel(newStatus)
+	subject := fmt.Sprintf("Order #%d Update - %s", orderID, statusLabel)
+	statusURL := e.orderStatusURL(orderID, to)
+	statusLinkHTML := ""
+	if statusURL != "" {
+		statusLinkHTML = fmt.Sprintf(`<p><a href="%s" style="color:#18181b;text-decoration:underline;">View order status</a></p>`, statusURL)
+	}
+
+	htmlContent := fmt.Sprintf(`<html><head></head><body style="font-family:Arial,Helvetica,sans-serif;color:#111827;">
+<p>Dear %s,</p>
+<p>Your order status has been updated.</p>
+<p><strong>Order ID:</strong> %d<br>
+<strong>New status:</strong> %s</p>
+%s
+<p>Thank you for shopping with us.</p>
+<p>Best regards,<br>
+Bhomanshah Team</p>
+</body></html>`, html.EscapeString(customerName), orderID, html.EscapeString(statusLabel), statusLinkHTML)
+
+	return e.sendEmail(to, subject, htmlContent)
+}
+
 func (e *EmailService) orderStatusURL(orderID int64, email string) string {
 	base := strings.TrimSpace(e.orderStatusBase)
 	if base == "" {
 		return ""
 	}
 	base = strings.TrimRight(base, "/")
-	return fmt.Sprintf("%s/order-status.html?order_id=%d&email=%s", base, orderID, email)
+	return fmt.Sprintf("%s/order-status?order_id=%d&email=%s", base, orderID, url.QueryEscape(email))
 }
 
 func (e *EmailService) renderOrderItems(items []models.OrderItem) string {
@@ -87,7 +117,7 @@ func (e *EmailService) renderOrderItems(items []models.OrderItem) string {
 		if variant == "" {
 			variant = "-"
 		}
-		sb.WriteString(`<tr>`) 
+		sb.WriteString(`<tr>`)
 		sb.WriteString(fmt.Sprintf(`<td style="padding:6px 0;">%s</td>`, name))
 		sb.WriteString(fmt.Sprintf(`<td style="padding:6px 0;">%s</td>`, variant))
 		sb.WriteString(fmt.Sprintf(`<td align="right" style="padding:6px 0;">%d</td>`, item.Qty))
@@ -142,4 +172,19 @@ func (e *EmailService) sendEmail(to, subject, htmlContent string) error {
 	}
 
 	return nil
+}
+
+func formatStatusLabel(status string) string {
+	switch strings.ToLower(strings.TrimSpace(status)) {
+	case "new":
+		return "New"
+	case "confirmed":
+		return "Confirmed"
+	case "shipped":
+		return "Shipped"
+	case "canceled":
+		return "Canceled"
+	default:
+		return status
+	}
 }

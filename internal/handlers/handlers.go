@@ -4,6 +4,7 @@ import (
 	"crypto/subtle"
 	"database/sql"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 
@@ -563,11 +564,11 @@ func (h *Handler) AdminCreateVariant(c fiber.Ctx) error {
 	}
 
 	var req struct {
-		Size  string `json:"size" validate:"required"`
-		Color string `json:"color" validate:"required"`
-		Price int64  `json:"price" validate:"required,gt=0"`
-		Stock int    `json:"stock" validate:"required,gte=0"`
-		Active bool  `json:"active"`
+		Size   string `json:"size" validate:"required"`
+		Color  string `json:"color" validate:"required"`
+		Price  int64  `json:"price" validate:"required,gt=0"`
+		Stock  int    `json:"stock" validate:"required,gte=0"`
+		Active bool   `json:"active"`
 	}
 
 	if err := c.Bind().Body(&req); err != nil {
@@ -696,6 +697,10 @@ func (h *Handler) AdminDeleteVariant(c fiber.Ctx) error {
 // AdminGetOrders returns all orders with optional filters.
 // GET /admin/orders
 func (h *Handler) AdminGetOrders(c fiber.Ctx) error {
+	c.Set("Cache-Control", "no-store, no-cache, must-revalidate, private")
+	c.Set("Pragma", "no-cache")
+	c.Set("Expires", "0")
+
 	status := c.Query("status")
 	// Note: date filtering could be added later if needed
 
@@ -712,6 +717,10 @@ func (h *Handler) AdminGetOrders(c fiber.Ctx) error {
 // AdminGetOrder returns a single order with its items.
 // GET /admin/orders/:id
 func (h *Handler) AdminGetOrder(c fiber.Ctx) error {
+	c.Set("Cache-Control", "no-store, no-cache, must-revalidate, private")
+	c.Set("Pragma", "no-cache")
+	c.Set("Expires", "0")
+
 	idStr := c.Params("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -722,13 +731,13 @@ func (h *Handler) AdminGetOrder(c fiber.Ctx) error {
 
 	order, err := h.orderRepo.GetByID(int64(id))
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-				"error": "Order not found",
-			})
-		}
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to fetch order",
+		})
+	}
+	if order == nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "Order not found",
 		})
 	}
 
@@ -749,6 +758,10 @@ func (h *Handler) AdminGetOrder(c fiber.Ctx) error {
 // AdminUpdateOrderStatus updates an order's status.
 // PATCH /admin/orders/:id
 func (h *Handler) AdminUpdateOrderStatus(c fiber.Ctx) error {
+	c.Set("Cache-Control", "no-store, no-cache, must-revalidate, private")
+	c.Set("Pragma", "no-cache")
+	c.Set("Expires", "0")
+
 	idStr := c.Params("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -773,11 +786,41 @@ func (h *Handler) AdminUpdateOrderStatus(c fiber.Ctx) error {
 		})
 	}
 
+	order, err := h.orderRepo.GetByID(int64(id))
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to fetch order",
+		})
+	}
+	if order == nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "Order not found",
+		})
+	}
+
+	if strings.EqualFold(order.Status, req.Status) {
+		return c.JSON(fiber.Map{
+			"message": "Order status is already set",
+			"status":  order.Status,
+		})
+	}
+
 	err = h.orderRepo.UpdateStatus(int64(id), req.Status)
 	if err != nil {
+		if strings.Contains(err.Error(), "order not found") {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"error": "Order not found",
+			})
+		}
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to update order status",
 		})
+	}
+
+	if order.CustomerEmail != "" {
+		if emailErr := h.emailService.SendOrderStatusUpdate(order.CustomerEmail, order.CustomerName, order.ID, req.Status); emailErr != nil {
+			log.Printf("failed to send status update email for order %d: %v", order.ID, emailErr)
+		}
 	}
 
 	return c.JSON(fiber.Map{
@@ -856,15 +899,15 @@ func (h *Handler) SendTestEmail(c fiber.Ctx) error {
 	err := h.emailService.SendOrderConfirmation(req.Email, "Test Customer", 12345, 1199, items)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to send test email",
+			"error":   "Failed to send test email",
 			"details": err.Error(),
 		})
 	}
 
 	return c.JSON(fiber.Map{
-		"message": "Test email sent successfully",
-		"email":   req.Email,
+		"message":  "Test email sent successfully",
+		"email":    req.Email,
 		"order_id": 12345,
-		"total": 1199,
+		"total":    1199,
 	})
 }
