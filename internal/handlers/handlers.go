@@ -291,7 +291,7 @@ func (h *Handler) CreateOrder(c fiber.Ctx) error {
 }
 
 // GetOrderStatus returns a public order status view (email verification required).
-// GET /api/orders/:id/status?email=customer@example.com
+// GET /api/order-status/:id?email=customer@example.com
 func (h *Handler) GetOrderStatus(c fiber.Ctx) error {
 	idStr := c.Params("id")
 	id, err := strconv.Atoi(idStr)

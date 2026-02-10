@@ -71,7 +71,7 @@ func main() {
 	api.Post("/orders", middleware.StrictRateLimit(5, 1*time.Minute), h.CreateOrder)
 
 	// GET /api/orders/:id/status — public order status lookup (email required)
-	api.Get("/orders/:id/status", h.GetOrderStatus)
+	api.Get("/order-status/:id", h.GetOrderStatus)
 
 	// POST /api/test-email — send test order confirmation email
 	api.Post("/test-email", h.SendTestEmail)

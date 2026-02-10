@@ -41,7 +41,7 @@ func Load() *Config {
 		Environment: getEnv("ENVIRONMENT", "development"),
 		BrevoAPIKey: getEnv("BREVO_API_KEY", ""),
 		EmailFrom:   getEnv("DEFAULT_FROM_EMAIL", "store@bhomanshah.com"),
-		OrderStatusURLBase: getEnv("ORDER_STATUS_URL_BASE", "https://bhomanshah.com/order-status"),
+		OrderStatusURLBase: getEnv("ORDER_STATUS_URL_BASE", "https://api.bhomanshah.com"),
 	}
 }
 

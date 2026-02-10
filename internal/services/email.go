@@ -35,7 +35,7 @@ func (e *EmailService) SendOrderConfirmation(to, customerName string, orderID in
 	}
 
 	subject := "Order Confirmation - Bhomanshah"
-	statusURL := e.orderStatusURL(orderID)
+	statusURL := e.orderStatusURL(orderID, to)
 	itemsHTML := e.renderOrderItems(items)
 	statusLinkHTML := ""
 	if statusURL != "" {
@@ -57,13 +57,13 @@ Bhomanshah Team</p>
 	return e.sendEmail(to, subject, htmlContent)
 }
 
-func (e *EmailService) orderStatusURL(orderID int64) string {
+func (e *EmailService) orderStatusURL(orderID int64, email string) string {
 	base := strings.TrimSpace(e.orderStatusBase)
 	if base == "" {
 		return ""
 	}
 	base = strings.TrimRight(base, "/")
-	return fmt.Sprintf("%s/%d", base, orderID)
+	return fmt.Sprintf("%s/%d?email=%s", base, orderID, email)
 }
 
 func (e *EmailService) renderOrderItems(items []models.OrderItem) string {
